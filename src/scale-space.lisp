@@ -1,0 +1,91 @@
+(in-package :sift)
+
+(sera:-> downsample ((simple-array double-float (* *)))
+         (values (simple-array double-float (* *)) &optional))
+(defun downsample (array)
+  (declare (optimize (speed 3)))
+  (let ((result (make-array (list (floor (array-dimension array 0) 2)
+                                  (floor (array-dimension array 1) 2))
+                            :element-type 'double-float)))
+    (loop-array (result (i j))
+      (setf (aref result i j)
+            (aref array (* i 2) (* j 2))))
+    result))
+
+(sera:-> gaussian-parameter
+         ((double-float (0d0)) fixnum alex:positive-fixnum)
+         (values (double-float (0d0)) &optional))
+(declaim (inline gaussian-parameter))
+(defun gaussian-parameter (σ k n)
+  (* σ (expt 2d0 (* k (/ n)))))
+
+(sera:-> gaussian-parameters/octave
+         ((double-float (0d0)) alex:positive-fixnum)
+         (values list &optional))
+(declaim (inline gaussian-parameters/octave))
+(defun gaussian-parameters/octave (σ n)
+  (loop for k from -1 below (+ n 2) collect
+        (gaussian-parameter σ k n)))
+
+(sera:-> gaussian-scale-space/octave
+         ((simple-array double-float (* *)) list)
+         (values (simple-array double-float (* * *))
+                 (simple-array double-float (* *))
+                 &optional))
+(defun gaussian-scale-space/octave (array σs)
+  (declare (optimize (speed 3)))
+  (let* ((nl (length σs))
+         (h (array-dimension array 0))
+         (w (array-dimension array 1))
+         (result (make-array (list nl h w) :element-type 'double-float))
+         array-at-2σ)
+    (loop for i below nl
+          for σ double-float in σs
+          for blurred = (gaussian-blur array σ) do
+          (loop-array (blurred (j k))
+           (setf (aref result i j k) (aref blurred j k)))
+          (when (= i (- nl 2))
+            (setq array-at-2σ blurred)))
+    (values result (downsample array-at-2σ))))
+
+(sera:defconstructor scale-space
+  (octaves list)
+  (σs      (simple-array double-float (*))))
+
+(sera:-> gaussian-scale-space
+         ((simple-array double-float (* *))
+          &key
+          (:σ (double-float (0d0)))
+          (:n alex:positive-fixnum)
+          (:m alex:positive-fixnum))
+         (values scale-space &optional))
+(defun gaussian-scale-space (a &key (σ 1.5d0) (n 3) (m 3))
+  "Compute a set of blurred images of A which constitutes the scale
+space of A with M octaves, N+3 images per octave."
+  (declare (optimize (speed 3)))
+  (let ((σs (gaussian-parameters/octave σ n)))
+    (labels ((%go (a m acc)
+               (declare (type fixnum m))
+               (if (zerop m) acc
+                   (multiple-value-bind (octave downsampled)
+                       (gaussian-scale-space/octave a σs)
+                     (%go downsampled (1- m) (cons octave acc))))))
+      (scale-space (reverse (%go a m nil))
+                   (make-array (+ n 3)
+                               :element-type 'double-float
+                               :initial-contents σs)))))
+
+(sera:-> gaussian->dog ((simple-array double-float (* * *)))
+         (values (simple-array double-float (* * *)) &optional))
+(defun gaussian->dog (octave)
+  (declare (optimize (speed 3)))
+  (let* ((nl (array-dimension octave 0))
+         (h  (array-dimension octave 1))
+         (w  (array-dimension octave 2))
+         (result (make-array (list (1- nl) h w) :element-type 'double-float)))
+    (loop for l below (1- nl) do
+          (loop-ranges ((i 0 h) (j 0 w))
+           (setf (aref result l i j)
+                 (- (aref octave (1+ l) i j)
+                    (aref octave l i j)))))
+    result))

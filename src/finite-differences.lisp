@@ -1,0 +1,82 @@
+(in-package :sift)
+
+(deftype scalar-field () '(sera:-> (index3) (values double-float &optional)))
+
+(alex:define-constant +shift-x+
+    (index3 1 0 0)
+  :test #'equalp)
+
+(alex:define-constant +shift-y+
+    (index3 0 1 0)
+  :test #'equalp)
+
+(alex:define-constant +shift-z+
+    (index3 0 0 1)
+  :test #'equalp)
+
+(sera:-> derivative/1 (scalar-field index3 index3)
+         (values double-float &optional))
+(defun derivative/1 (f index dir)
+  (declare (optimize (speed 3)))
+  (let ((p1 (index3-+ index dir))
+        (p2 (index3-- index dir)))
+    (declare (dynamic-extent p1 p2))
+    (/ (- (funcall f p1) (funcall f p2)) 2)))
+
+(sera:-> gradient (scalar-field index3)
+         (values (vec 3) &optional))
+(defun gradient (f index)
+  (declare (optimize (speed 3)))
+  (make-vec3
+   (derivative/1 f index +shift-x+)
+   (derivative/1 f index +shift-y+)
+   (derivative/1 f index +shift-z+)))
+
+(declaim (inline gradient/array))
+(defun gradient/array (array index)
+  (gradient
+   (lambda (index)
+     (aref-index3/p array index))
+   index))
+
+(sera:-> derivative/2m (scalar-field index3 index3 index3)
+         (values double-float &optional))
+(defun derivative/2m (f index dir1 dir2)
+  (declare (optimize (speed 3)))
+  (let* ((p1 (index3-+ index dir1))
+         (p2 (index3-- index dir1))
+         (d1 (derivative/1 f p1 dir2))
+         (d2 (derivative/1 f p2 dir2)))
+    (declare (dynamic-extent p1 p2))
+    (/ (- d1 d2) 2)))
+
+;; NB: Does not go out of bounds!
+(sera:-> derivative/2 (scalar-field index3 index3)
+         (values double-float &optional))
+(defun derivative/2 (f index shift)
+  (declare (optimize (speed 3)))
+  (let ((p1 (index3-+ index shift))
+        (p2 (index3-- index shift)))
+    (declare (dynamic-extent p1 p2))
+    (+ (funcall f p1) (funcall f p2) (* (funcall f index) -2))))
+
+(sera:-> hessian (scalar-field index3)
+         (values (mat 3) &optional))
+(defun hessian (f index)
+  (declare (optimize (speed 3)))
+  (let ((xx (derivative/2  f index +shift-x+))
+        (yy (derivative/2  f index +shift-y+))
+        (zz (derivative/2  f index +shift-z+))
+        (xy (derivative/2m f index +shift-x+ +shift-y+))
+        (xz (derivative/2m f index +shift-x+ +shift-z+))
+        (yz (derivative/2m f index +shift-y+ +shift-z+)))
+    (make-mat3 xx xy xz
+               xy yy yz
+               xz yz zz)))
+
+(declaim (inline hessian/array))
+(defun hessian/array (array index)
+  (hessian
+   (lambda (index)
+     (aref-index3/p array index))
+   index))
