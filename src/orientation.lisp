@@ -41,7 +41,8 @@ point."
          (values alex:non-negative-fixnum &optional))
 (declaim (inline angle->bin))
 (defun angle->bin (angle nbins)
-  (nth-value 0 (floor (mod angle (* 2 pi)) (/ (* 2 pi) nbins))))
+  (let ((bin (floor (mod angle (* 2 pi)) (/ (* 2 pi) nbins))))
+    (if (= bin nbins) 0 bin)))
 
 (sera:-> orientation-histogram (space-attachment)
          (values (simple-array double-float (36)) &optional))
