@@ -50,5 +50,6 @@
   :serial t
   :components ((:file "package")
                (:file "draw-keypoints")
-               (:file "draw-matches"))
+               (:file "draw-matches")
+               (:file "success-rates"))
   :depends-on (:sift :imago))

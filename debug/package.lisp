@@ -2,4 +2,7 @@
   (:use #:cl)
   (:local-nicknames (#:sera #:serapeum))
   (:export #:draw-keypoints
-           #:draw-matches))
+           #:draw-matches
+
+           #:success-rates-scaling
+           #:success-rates-rotation))
