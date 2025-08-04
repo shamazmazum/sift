@@ -1,17 +1,5 @@
 (in-package :sift)
 
-(sera:-> downsample ((simple-array double-float (* *)))
-         (values (simple-array double-float (* *)) &optional))
-(defun downsample (array)
-  (declare (optimize (speed 3)))
-  (let ((result (make-array (list (floor (array-dimension array 0) 2)
-                                  (floor (array-dimension array 1) 2))
-                            :element-type 'double-float)))
-    (loop-array (result (i j))
-      (setf (aref result i j)
-            (aref array (* i 2) (* j 2))))
-    result))
-
 (sera:-> gaussian-parameter
          ((double-float (0d0)) fixnum alex:positive-fixnum)
          (values (double-float (0d0)) &optional))
@@ -29,24 +17,19 @@
 
 (sera:-> gaussian-scale-space/octave
          ((simple-array double-float (* *)) list)
-         (values (simple-array double-float (* * *))
-                 (simple-array double-float (* *))
-                 &optional))
+         (values (simple-array double-float (* * *)) &optional))
 (defun gaussian-scale-space/octave (array σs)
   (declare (optimize (speed 3)))
   (let* ((nl (length σs))
          (h (array-dimension array 0))
          (w (array-dimension array 1))
-         (result (make-array (list nl h w) :element-type 'double-float))
-         array-at-2σ)
+         (result (make-array (list nl h w) :element-type 'double-float)))
     (loop for i below nl
           for σ double-float in σs
           for blurred = (gaussian-blur array σ) do
           (loop-array (blurred (j k))
-           (setf (aref result i j k) (aref blurred j k)))
-          (when (= i (- nl 2))
-            (setq array-at-2σ blurred)))
-    (values result (downsample array-at-2σ))))
+           (setf (aref result i j k) (aref blurred j k))))
+    result))
 
 (sera:defconstructor scale-space
   (octaves list)
@@ -67,9 +50,8 @@ space of A with M octaves, N+3 images per octave."
     (labels ((%go (a m acc)
                (declare (type fixnum m))
                (if (zerop m) acc
-                   (multiple-value-bind (octave downsampled)
-                       (gaussian-scale-space/octave a σs)
-                     (%go downsampled (1- m) (cons octave acc))))))
+                   (let ((octave (gaussian-scale-space/octave a σs)))
+                     (%go (downsample a) (1- m) (cons octave acc))))))
       (scale-space (reverse (%go a m nil))
                    (make-array (+ n 3)
                                :element-type 'double-float

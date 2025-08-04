@@ -10,6 +10,7 @@
                (:file "util")
                (:file "linalg")
                (:file "gaussian-blur")
+               (:file "downsample")
                (:file "scale-space")
                (:file "keypoint-def")
                (:file "finite-differences")
