@@ -56,10 +56,6 @@
                 (sift:interpolate #'get-data 0d0 x y)))))
     result))
 
-(declaim (inline clamp))
-(defun clamp (v min max)
-  (min (max v min) max))
-
 (sera:-> add-noise ((simple-array double-float (* *)))
          (values (simple-array double-float (* *)) &optional))
 (defun add-noise (array)

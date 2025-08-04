@@ -6,6 +6,10 @@
     (cons (floor x)
           (floor y))))
 
+(declaim (inline clamp))
+(defun clamp (v min max)
+  (max (min v max) min))
+
 (sera:-> draw-keypoints ((simple-array double-float (* *)) list)
          (values imago:rgb-image &optional))
 (defun draw-keypoints (array keypoints)
@@ -13,7 +17,7 @@
          (imago:make-rgb-image-from-pixels
           (aops:vectorize* 'imago:rgb-pixel
               (array)
-            (let ((v (min (floor (* 255 array)) 255)))
+            (let ((v (clamp (floor (* 255 array)) 0 255)))
               (imago:make-color v v v))))))
     (loop for color = (imago:make-color
                        (random 255)
