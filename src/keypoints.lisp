@@ -91,7 +91,8 @@
                        (det (det2 subhessian))
                        (r 10d0))
                   ;; Discard a keypoint with big ratio of principal curvatures
-                  (if (< (/ (expt trace 2) det) (/ (expt (1+ r) 2) r))
+                  (if (and (> det 0)
+                           (< (/ (expt trace 2) det) (/ (expt (1+ r) 2) r)))
                       (add-coord attachment diff)))))))))
 
 (sera:-> adjust-keypoints (list)
