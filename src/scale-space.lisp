@@ -5,7 +5,7 @@
          (values (double-float (0d0)) &optional))
 (declaim (inline gaussian-parameter))
 (defun gaussian-parameter (σ k n)
-  (* σ (expt 2d0 (* k (/ n)))))
+  (* σ (expt 2d0 (/ k n))))
 
 (sera:-> gaussian-parameters/octave
          ((double-float (0d0)) alex:positive-fixnum)
