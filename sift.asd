@@ -51,5 +51,6 @@
   :components ((:file "package")
                (:file "draw-keypoints")
                (:file "draw-matches")
+               (:file "image-io")
                (:file "success-rates"))
-  :depends-on (:sift :imago))
+  :depends-on (:sift :imago :array-operations))
