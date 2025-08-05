@@ -6,5 +6,8 @@
            #:draw-keypoints
            #:draw-matches
 
+           #:scale-array
+           #:rotate-array
+
            #:success-rates-scaling
            #:success-rates-rotation))
