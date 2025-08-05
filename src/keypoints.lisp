@@ -80,8 +80,8 @@
     (let* ((hessian  (hessian/array  dog index))
            (gradient (gradient/array dog index))
            (diff (scalev3 (mul-m3v3 (inv3 hessian) gradient) -1d0)))
+      ;; Drop keypoints with enormous extremum correction
       (if (shift-ok-p diff)
-          ;; Drop keypoints with enormous extremum correction
           (let ((value (+ (aref-index3 dog index)
                           (/ (dot3 gradient diff) 2))))
             ;; Discard a keypoint with low contrast
