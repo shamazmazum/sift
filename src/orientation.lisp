@@ -44,6 +44,27 @@ point."
   (let ((bin (floor (mod angle (* 2 pi)) (/ (* 2 pi) nbins))))
     (if (= bin nbins) 0 bin)))
 
+;; FIXME: This is a version which is preferred over ANGLE->BIN.
+;;
+;; It distributes a value between the two closest bins with weight
+;; between 0 and 1.
+(sera:-> angle->bins (double-float alex:positive-fixnum)
+         (values alex:non-negative-fixnum alex:non-negative-fixnum
+                 double-float double-float
+                 &optional))
+(defun angle->bins (x nbins)
+  (declare (optimize (speed 3)))
+  (let* ((w   (/ (* 2 pi) nbins))
+         (w/2 (/ w 2)))
+    (multiple-value-bind (q r)
+        (floor (- x w/2) w)
+      (declare (type fixnum q))
+      (let ((v (/ r w)))
+        (values (mod q nbins)
+                (mod (1+ q) nbins)
+                (- (1- v))
+                v)))))
+
 (sera:-> orientation-histogram (space-attachment)
          (values (simple-array double-float (36)) &optional))
 (defun orientation-histogram (attachment)
@@ -62,9 +83,11 @@ point."
             (coord (add3 diff (keypoint-coord keypoint))))
        (multiple-value-bind (phase magnitude)
            (evaluate-neighbor array coord)
-         (let ((bin (angle->bin phase 36)))
-           (incf (aref hist bin)
-                 (* magnitude (gaussian σ diff)))))))
+         (multiple-value-bind (bin1 bin2 w1 w2)
+             (angle->bins phase 36)
+           (let ((v (* magnitude (gaussian σ diff))))
+             (incf (aref hist bin1) (* v w1))
+             (incf (aref hist bin2) (* v w2)))))))
     hist))
 
 (defconstant +ori-bin-width+ (/ (* 2 pi) 36))
