@@ -1,29 +1,5 @@
 (in-package :sift)
 
-(alex:define-constant +neighborhood+
-    (let (points)
-      (loop-ranges ((i -8 8) (j -8 8))
-       (let ((bin-i (+ (floor i 4) 2))
-             (bin-j (+ (floor j 4) 2))
-             (coord (make-vec3 0d0
-                               (+ i 5d-1)
-                               (+ j 5d-1)))
-             bins)
-         (loop-ranges ((si 0 3) (sj 0 3))
-          (let* ((%bin-i (- (1+ bin-i) si))
-                 (%bin-j (- (1+ bin-j) sj))
-                 (bin-center (make-vec3 0d0
-                                        (float (+ 2 (* 4 (- %bin-i 2))) 0d0)
-                                        (float (+ 2 (* 4 (- %bin-j 2))) 0d0))))
-            (when (and (<= 0 %bin-i 3)
-                       (<= 0 %bin-j 3))
-              (push (cons (cons %bin-i %bin-j)
-                          (- (1- (/ (dist3 coord bin-center) 8))))
-                    bins))))
-         (push (cons bins coord) points)))
-      points)
-  :test #'equalp)
-
 (declaim (inline flatten-descriptor))
 (defun flatten-descriptor (descr)
   (let ((result (make-array (* 4 4 8)
@@ -69,17 +45,52 @@
          (sin (sin angle))
          (m (make-mat3 1d0 0d0 0d0
                        0d0 cos (- sin)
-                       0d0 sin cos)))
-    (loop for (weights . neighbor) in +neighborhood+
-          for rotated = (mul-m3v3 m neighbor)
-          for coord = (add3 (keypoint-coord keypoint) rotated) do
-          (multiple-value-bind (kp-angle norm)
-              (evaluate-neighbor gaussian coord)
-            (let ((bin (angle->bin (- kp-angle angle) 8)))
-              (loop for ((i . j) . weight) in weights
-                    for w double-float = weight do
-                    (incf (aref descriptor i j bin)
-                          ;; Half width of the window?
-                          (* norm w (gaussian 4d0 rotated)))))))
+                       0d0 sin cos))
+         (σ (keypoint-σ keypoint))
+         (hist-width/2 (* (the fixnum (ceiling σ)) 2))
+         (hist-width   (* hist-width/2 2))
+         (window-width (* hist-width 4))
+         (shift (- (* hist-width 2) 5d-1)))
+    (declare (type fixnum window-width hist-width hist-width/2))
+    (flet ((idx->bin (idx)
+             (multiple-value-bind (q r)
+                 (floor (- idx hist-width/2) hist-width)
+               (let ((v (float (/ r hist-width) 0d0)))
+                 (values q (- (1- v))))))
+           (incf-descr! (i j k v)
+             (when (and (<= 0 i 3)
+                        (<= 0 j 3))
+               (incf (aref descriptor i j k) v))))
+      (loop-ranges ((i 0 window-width) (j 0 window-width))
+       (let* ((neighbor (make-vec3 0d0 (- i shift) (- j shift)))
+              (rotated (mul-m3v3 m neighbor))
+              (coord (add3 (keypoint-coord keypoint) rotated)))
+         (multiple-value-bind (bin-i wi)
+             (idx->bin i)
+           (declare (type fixnum bin-i))
+           (multiple-value-bind (bin-j wj)
+               (idx->bin j)
+             (declare (type fixnum bin-j))
+             (multiple-value-bind (kp-angle norm)
+                 (evaluate-neighbor gaussian coord)
+               (multiple-value-bind (bin-o bin-o+1 wo)
+                   (angle->bins (- kp-angle angle) 8)
+                 (let ((v (* norm (gaussian (* σ 4) neighbor))))
+                   (incf-descr! bin-i bin-j bin-o
+                                (* v wi wj wo))
+                   (incf-descr! bin-i bin-j bin-o+1
+                                (* v wi wj (- 1 wo)))
+                   (incf-descr! bin-i (1+ bin-j) bin-o
+                                (* v wi (- 1 wj) wo))
+                   (incf-descr! bin-i (1+ bin-j) bin-o+1
+                                (* v wi (- 1 wj) (- 1 wo)))
+                   (incf-descr! (1+ bin-i) bin-j bin-o
+                                (* v (- 1 wi) wj wo))
+                   (incf-descr! (1+ bin-i) bin-j bin-o+1
+                                (* v (- 1 wi) wj (- 1 wo)))
+                   (incf-descr! (1+ bin-i) (1+ bin-j) bin-o
+                                (* v (- 1 wi) (- 1 wj) wo))
+                   (incf-descr! (1+ bin-i) (1+ bin-j) bin-o+1
+                                (* v (- 1 wi) (- 1 wj) (- 1 wo)))))))))))
     (descriptor-postprocess!
      (flatten-descriptor descriptor))))

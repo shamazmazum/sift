@@ -37,21 +37,10 @@ point."
 (defun gaussian (σ coord)
   (%gaussian σ (aref coord 1) (aref coord 2)))
 
-(sera:-> angle->bin (double-float alex:positive-fixnum)
-         (values alex:non-negative-fixnum &optional))
-(declaim (inline angle->bin))
-(defun angle->bin (angle nbins)
-  (let ((bin (floor (mod angle (* 2 pi)) (/ (* 2 pi) nbins))))
-    (if (= bin nbins) 0 bin)))
-
-;; FIXME: This is a version which is preferred over ANGLE->BIN.
-;;
-;; It distributes a value between the two closest bins with weight
-;; between 0 and 1.
+;; This function distributes a value between the two closest bins with
+;; weight between 0 and 1.
 (sera:-> angle->bins (double-float alex:positive-fixnum)
-         (values alex:non-negative-fixnum alex:non-negative-fixnum
-                 double-float double-float
-                 &optional))
+         (values alex:non-negative-fixnum alex:non-negative-fixnum double-float &optional))
 (defun angle->bins (x nbins)
   (declare (optimize (speed 3)))
   (let* ((w   (/ (* 2 pi) nbins))
@@ -62,8 +51,7 @@ point."
       (let ((v (/ r w)))
         (values (mod q nbins)
                 (mod (1+ q) nbins)
-                (- (1- v))
-                v)))))
+                (- 1 v))))))
 
 (sera:-> orientation-histogram (space-attachment)
          (values (simple-array double-float (36)) &optional))
@@ -72,7 +60,7 @@ point."
   (let* ((keypoint (space-attachment-point    attachment))
          (array    (space-attachment-gaussian attachment))
          (σ (* (keypoint-σ keypoint) 1.5))
-         (l (1+ (* (ceiling σ) 4)))
+         (l (1+ (* (the fixnum (ceiling σ)) 4)))
          (w (floor l 2))
          (hist (make-array 36
                            :element-type 'double-float
@@ -83,11 +71,11 @@ point."
             (coord (add3 diff (keypoint-coord keypoint))))
        (multiple-value-bind (phase magnitude)
            (evaluate-neighbor array coord)
-         (multiple-value-bind (bin1 bin2 w1 w2)
+         (multiple-value-bind (bin1 bin2 w)
              (angle->bins phase 36)
            (let ((v (* magnitude (gaussian σ diff))))
-             (incf (aref hist bin1) (* v w1))
-             (incf (aref hist bin2) (* v w2)))))))
+             (incf (aref hist bin1) (* v w))
+             (incf (aref hist bin2) (* v (- 1 w))))))))
     hist))
 
 (defconstant +ori-bin-width+ (/ (* 2 pi) 36))
