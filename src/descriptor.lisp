@@ -1,23 +1,5 @@
 (in-package :sift)
 
-(eval-when (:compile-toplevel :load-toplevel :execute)
-  (sera:-> z-order ((unsigned-byte 32)
-                    (unsigned-byte 32))
-           (values (unsigned-byte 64) &optional))
-  (defun z-order (x y)
-    (let ((n (max (integer-length x)
-                  (integer-length y))))
-      (labels ((%go (acc i)
-                 (if (= i n) acc
-                     (%go
-                      (logior
-                       (* (logior (* (ldb (byte 1 i) x))
-                                  (* (ldb (byte 1 i) y) 2))
-                          (ash 1 (* i 2)))
-                       acc)
-                      (1+ i)))))
-        (%go 0 0)))))
-
 (alex:define-constant +neighborhood+
     (let (points)
       (loop-ranges ((i -8 8) (j -8 8))
@@ -35,7 +17,7 @@
                                         (float (+ 2 (* 4 (- %bin-j 2))) 0d0))))
             (when (and (<= 0 %bin-i 3)
                        (<= 0 %bin-j 3))
-              (push (cons (z-order %bin-i %bin-j)
+              (push (cons (cons %bin-i %bin-j)
                           (- (1- (/ (dist3 coord bin-center) 8))))
                     bins))))
          (push (cons bins coord) points)))
@@ -44,9 +26,9 @@
 
 (declaim (inline flatten-descriptor))
 (defun flatten-descriptor (descr)
-  (let ((result (make-array (* 16 8)
+  (let ((result (make-array (* 4 4 8)
                             :element-type 'double-float))
-        (flat (make-array (* 16 8)
+        (flat (make-array (* 4 4 8)
                           :element-type 'double-float
                           :displaced-to descr
                           :displaced-index-offset 0)))
@@ -77,7 +59,7 @@
          (values descriptor &optional))
 (defun describe-point (attachment)
   (declare (optimize (speed 3)))
-  (let* ((descriptor (make-array '(16 8)
+  (let* ((descriptor (make-array '(4 4 8)
                                  :element-type 'double-float
                                  :initial-element 0d0))
          (keypoint (space-attachment-point attachment))
@@ -94,9 +76,9 @@
           (multiple-value-bind (kp-angle norm)
               (evaluate-neighbor gaussian coord)
             (let ((bin (angle->bin (- kp-angle angle) 8)))
-              (loop for (hist-idx . weight) in weights
+              (loop for ((i . j) . weight) in weights
                     for w double-float = weight do
-                    (incf (aref descriptor hist-idx bin)
+                    (incf (aref descriptor i j bin)
                           ;; Half width of the window?
                           (* norm w (gaussian 4d0 rotated)))))))
     (descriptor-postprocess!
