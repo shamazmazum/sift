@@ -7,10 +7,6 @@
   (σ      (double-float (0d0)))
   (angle  (double-float 0d0 (#.(* 2 pi)))))
 
-;; Keypoint with a descriptor
-(deftype descriptor () '(simple-array double-float (128)))
-(deftype described-keypoint () '(cons descriptor keypoint))
-
 (picolens:gen-lenses keypoint
   (keypoint-coord  kp-coord)
   (keypoint-index  kp-index)
@@ -18,37 +14,20 @@
   (keypoint-σ      kp-σ)
   (keypoint-angle  kp-angle))
 
-;; Keypoint with a binding to a scale space
-(sera:defconstructor space-attachment
-  (point    keypoint)
-  (dog      (simple-array double-float (* * *)))
-  (gaussian (simple-array double-float (* * *))))
-
-(picolens:gen-lenses space-attachment
-  (space-attachment-point    sa-point)
-  (space-attachment-dog      sa-dog)
-  (space-attachment-gaussian sa-gaussian))
-
-(defparameter *coord-lens*
-  (picolens:compose #'sa-point #'kp-coord))
-
-(defparameter *angle-lens*
-  (picolens:compose #'sa-point #'kp-angle))
-
-(sera:-> add-coord (space-attachment (vec 3))
-         (values space-attachment &optional))
+(sera:-> add-coord (keypoint (vec 3))
+         (values keypoint &optional))
 (declaim (inline add-coord))
-(defun add-coord (attachment diff)
-  (picolens:over *coord-lens*
+(defun add-coord (keypoint diff)
+  (picolens:over #'kp-coord
                  (lambda (x)
                    (add3 x diff))
-                 attachment))
+                 keypoint))
 
-(sera:-> new-angle (space-attachment (double-float 0d0 (#.(* 2 pi))))
-         (values space-attachment &optional))
+(sera:-> new-angle (keypoint (double-float 0d0 (#.(* 2 pi))))
+         (values keypoint &optional))
 (declaim (inline new-angle))
-(defun new-angle (attachment angle)
-  (picolens:set *angle-lens* angle attachment))
+(defun new-angle (keypoint angle)
+  (picolens:set #'kp-angle angle keypoint))
 
 (sera:-> global-coordinate (keypoint)
          (values double-float double-float &optional))

@@ -53,13 +53,11 @@ point."
                 (mod (1+ q) nbins)
                 (- 1 v))))))
 
-(sera:-> orientation-histogram (space-attachment)
+(sera:-> orientation-histogram (keypoint (simple-array double-float (* * *)))
          (values (simple-array double-float (36)) &optional))
-(defun orientation-histogram (attachment)
+(defun orientation-histogram (keypoint gaussian)
   (declare (optimize (speed 3)))
-  (let* ((keypoint (space-attachment-point    attachment))
-         (array    (space-attachment-gaussian attachment))
-         (σ (* (keypoint-σ keypoint) 1.5))
+  (let* ((σ (* (keypoint-σ keypoint) 1.5))
          (l (1+ (* (the fixnum (ceiling σ)) 4)))
          (w (floor l 2))
          (hist (make-array 36
@@ -70,7 +68,7 @@ point."
      (let* ((diff (make-vec3 0d0 (float (- i w) 0d0) (float (- j w) 0d0)))
             (coord (add3 diff (keypoint-coord keypoint))))
        (multiple-value-bind (phase magnitude)
-           (evaluate-neighbor array coord)
+           (evaluate-neighbor gaussian coord)
          (multiple-value-bind (bin1 bin2 w)
              (angle->bins phase 36)
            (let ((v (* magnitude (gaussian σ diff))))
@@ -81,11 +79,11 @@ point."
 (defconstant +ori-bin-width+ (/ (* 2 pi) 36))
 (defconstant +ori-bin-center+ (/ pi 36))
 
-(sera:-> determine-orientations (space-attachment)
+(sera:-> determine-orientations (keypoint (simple-array double-float (* * *)))
          (values list &optional))
-(defun determine-orientations (attachment)
+(defun determine-orientations (keypoint gaussian)
   (declare (optimize (speed 3)))
-  (loop with histogram = (orientation-histogram attachment)
+  (loop with histogram = (orientation-histogram keypoint gaussian)
         with max double-float = (reduce #'max histogram)
         for bin below 36
         for c = (aref histogram bin)
@@ -103,6 +101,6 @@ point."
         (let ((extremum (/ (- l r) 2 (+ r l (* c -2)))))
           (assert (< -1/2 extremum 1/2))
           (new-angle
-           attachment
+           keypoint
            (+ +ori-bin-center+
               (* (+ bin extremum) +ori-bin-width+))))))

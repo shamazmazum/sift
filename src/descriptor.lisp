@@ -1,5 +1,7 @@
 (in-package :sift)
 
+(deftype %descriptor () '(simple-array double-float (128)))
+
 (declaim (inline flatten-descriptor))
 (defun flatten-descriptor (descr)
   (let ((result (make-array (* 4 4 8)
@@ -10,8 +12,8 @@
                           :displaced-index-offset 0)))
     (replace result flat)))
 
-(sera:-> normalize-descriptor! (descriptor)
-         (values descriptor &optional))
+(sera:-> normalize-descriptor! (%descriptor)
+         (values %descriptor &optional))
 (defun normalize-descriptor! (descr)
   (declare (optimize (speed 3)))
   (let ((norm (sqrt (loop for x across descr sum (expt x 2) double-float))))
@@ -20,8 +22,8 @@
      (lambda (x) (/ x norm))
      descr)))
 
-(sera:-> descriptor-postprocess! (descriptor)
-         (values descriptor &optional))
+(sera:-> descriptor-postprocess! (%descriptor)
+         (values %descriptor &optional))
 (defun descriptor-postprocess! (descriptor)
   (declare (optimize (speed 3)))
   (let ((normalized (normalize-descriptor! descriptor)))
@@ -31,15 +33,19 @@
                  (min x 2d-1))
                normalized))))
 
-(sera:-> describe-point (space-attachment)
-         (values descriptor &optional))
-(defun describe-point (attachment)
+(sera:defconstructor descriptor
+  (keypoint keypoint)
+  (array    %descriptor))
+
+(sera:-> describe-point (keypoint scale-space)
+         (values %descriptor &optional))
+(defun describe-point (keypoint scale-space)
   (declare (optimize (speed 3)))
   (let* ((descriptor (make-array '(4 4 8)
                                  :element-type 'double-float
                                  :initial-element 0d0))
-         (keypoint (space-attachment-point attachment))
-         (gaussian (space-attachment-gaussian attachment))
+         (gaussian (nth (keypoint-octave keypoint)
+                        (scale-space-octaves scale-space)))
          (angle (keypoint-angle keypoint))
          (cos (cos angle))
          (sin (sin angle))
@@ -55,7 +61,7 @@
     (flet ((idx->bin (idx)
              (multiple-value-bind (q r)
                  (floor (- idx hist-width/2) hist-width)
-               (let ((v (float (/ r hist-width) 0d0)))
+               (let ((v (/ (float r 0d0) hist-width)))
                  (values q (- (1- v))))))
            (incf-descr! (i j k v)
              (when (and (<= 0 i 3)
@@ -94,3 +100,11 @@
                                 (* v (- 1 wi) (- 1 wj) (- 1 wo)))))))))))
     (descriptor-postprocess!
      (flatten-descriptor descriptor))))
+
+(sera:-> descriptors (scale-space)
+         (values list &optional))
+(defun descriptors (scale-space)
+  (mapcar
+   (lambda (keypoint)
+     (descriptor keypoint (describe-point keypoint scale-space)))
+   (keypoints scale-space)))

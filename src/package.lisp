@@ -6,6 +6,11 @@
   (:export #:gaussian-scale-space
            #:keypoints
            #:global-coordinate
+           #:describe-point
+           #:descriptors
+           #:descriptor
+           #:descriptor-keypoint
+           #:descriptor-array
            #:find-matches
 
            #:keypoint
@@ -13,9 +18,6 @@
            #:keypoint-octave
            #:keypoint-index
            #:keypoint-coord
-
-           #:space-attachment
-           #:space-attachment-point
 
            #:index3 #:index3-i #:index3-j #:index3-k
            #:aref-index3 #:aref-index3/p

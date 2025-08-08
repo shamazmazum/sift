@@ -90,8 +90,8 @@
                    0d0 0d0 1d0))
 
 (defun success-rates (data1 data2 m &key (spatial-error 4d0))
-  (let* ((kp1 (sift:keypoints (sift:gaussian-scale-space data1)))
-         (kp2 (sift:keypoints (sift:gaussian-scale-space data2)))
+  (let* ((kp1 (sift:descriptors (sift:gaussian-scale-space data1)))
+         (kp2 (sift:descriptors (sift:gaussian-scale-space data2)))
          (matches (sift:find-matches kp1 kp2))
          (correct 0))
     (loop for (kp1 . kp2) in matches
