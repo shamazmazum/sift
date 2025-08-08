@@ -13,17 +13,29 @@
 (sera:-> find-matches (list list)
          (values list &optional))
 (defun find-matches (set1 set2)
-  (let ((tree (vp-trees:make-vp-tree set2 #'descriptor-metric :key #'car)))
-    (reduce
-     (lambda (acc keypoint)
-       (multiple-value-bind (closest dist)
-           (vp-trees:nearest-neighbor
-            tree (car keypoint)
-            #'descriptor-metric :key #'car)
-         (let ((matches (vp-trees:find tree (car keypoint) (* 1.3d0 dist)
-                                       #'descriptor-metric
-                                       :key #'car
-                                       :max 2)))
-           (if (cdr matches) acc
-               (cons (cons (cdr keypoint) (cdr closest)) acc)))))
-     set1 :initial-value nil)))
+  (declare (optimize (speed 3)))
+  (reduce
+   (lambda (acc ds1)
+     (let ((d1 (car ds1))
+           (s1 (cdr ds1)))
+       (multiple-value-bind (closest dist1 dist2)
+           (loop with dist1 = ff:double-float-positive-infinity
+                 with dist2 = ff:double-float-positive-infinity
+                 with closest1 = nil
+                 with closest2 = nil
+                 for (d2 . s2) in set2 do
+                 (let ((d (descriptor-metric d1 d2)))
+                   (cond
+                     ((< d dist1)
+                      (setq dist2 dist1
+                            closest2 closest1
+                            dist1 d
+                            closest1 s2))
+                     ((< d dist2)
+                      (setq dist2 d
+                            closest2 s2))))
+                 finally (return (values closest1 dist1 dist2)))
+         (if (< dist1 (* 0.75 dist2))
+             (cons (cons s1 closest) acc)
+             acc))))
+   set1 :initial-value nil))

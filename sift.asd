@@ -23,7 +23,6 @@
                :serapeum
                :alexandria
                :float-features
-               :vp-trees
                :picolens)
   :in-order-to ((test-op (load-op "sift/tests")))
   :perform (test-op (op system)
