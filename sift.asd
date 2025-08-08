@@ -30,17 +30,6 @@
                     (declare (ignore op system))
                     (uiop:symbol-call :sift/tests '#:run-tests)))
 
-(defsystem :sift/tests
-  :name :sift/tests
-  :version "0.1"
-  :author "Vasily Postnicov <shamaz.mazum@gmail.com>"
-  :licence "2-clause BSD"
-  :pathname "tests"
-  :serial t
-  :components ((:file "package")
-               (:file "tests"))
-  :depends-on (:sift :fiveam :array-operations))
-
 (defsystem :sift/debug
   :name :sift/debug
   :version "0.1"
@@ -54,3 +43,19 @@
                (:file "image-io")
                (:file "success-rates"))
   :depends-on (:sift :imago :array-operations))
+
+(defsystem :sift/tests
+  :name :sift/tests
+  :version "0.1"
+  :author "Vasily Postnicov <shamaz.mazum@gmail.com>"
+  :licence "2-clause BSD"
+  :pathname "tests"
+  :serial t
+  :components ((:file "package")
+               (:file "tests"))
+  :depends-on (:sift
+               :sift/debug
+               :select
+               :fiveam
+               :array-operations
+               :numpy-npy))

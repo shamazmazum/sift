@@ -8,6 +8,9 @@
 
            #:scale-array
            #:rotate-array
+           #:scale-transform
+           #:rotation-transform
 
+           #:success-rates
            #:success-rates-scaling
            #:success-rates-rotation))

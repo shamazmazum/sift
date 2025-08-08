@@ -6,7 +6,7 @@
                    (let ((status (run suite)))
                      (explain! status)
                      (results-status status)))
-                 '(linalg3 linalg2 interp))))
+                 '(linalg3 linalg2 interp descr))))
 
 (defun approx-= (x y)
   (< (abs (- x y)) 1d-8))
@@ -56,9 +56,21 @@
    (float (sift:index3-j index) 0d0)
    (float (sift:index3-k index) 0d0)))
 
+;; Neumann, Rodrigo, ANDREETA, MARIANE, Lucas-Oliveira, Everton. "11
+;; Sandstones: raw, filtered and segmented data." Digital Rocks
+;; Portal, Digital Rocks Portal, 21 Apr 2025,
+;; https://www.doi.org/10.17612/f4h1-w124 Accessed 8 Aug 2025.
+(defparameter *slices*
+  (numpy-npy:load-array
+     (asdf:system-relative-pathname
+      :sift/tests (make-pathname :name "slices"
+                                 :type "npy"
+                                 :directory '(:relative "tests")))))
+
 (def-suite linalg3 :description "Linear algebra tests (3x3 matrices)")
 (def-suite linalg2 :description "Linear algebra tests (2x2 matrices)")
 (def-suite interp  :description "Linear interpolation")
+(def-suite descr   :description "SIFT keypoint descriptors")
 
 (in-suite linalg3)
 
@@ -135,3 +147,41 @@
         for z = (random 10d0) do
         (is (approx-= (linear-function x y z)
                       (sift:interpolate #'%linear-function x y z)))))
+
+(in-suite descr)
+
+(test descriptor-matching/scale
+  (loop repeat 10
+        for slice = (select:select *slices* (random (array-dimension *slices* 0))
+                                   (select:range 0 1000) (select:range 0 1000))
+        for s = (1+ (random 2d0))
+        for slice2 = (sift/debug:scale-array slice s s)
+        for m = (sift/debug:scale-transform s)
+        for rates = (sift/debug:success-rates slice slice2 m) do
+        (is (> (car rates) 150))
+        (is (> (/ (car rates) (cdr rates)) 8d-1))))
+
+(test descriptor-matching/rotation
+  (loop repeat 10
+        for slice = (select:select *slices* (random (array-dimension *slices* 0))
+                                   (select:range 0 1000) (select:range 0 1000))
+        for ϕ = (random (/ pi 2))
+        for slice2 = (sift/debug:rotate-array slice ϕ)
+        for m = (sift/debug:rotation-transform 1000 ϕ)
+        for rates = (sift/debug:success-rates slice slice2 m) do
+        (is (> (car rates) 150))
+        (is (> (/ (car rates) (cdr rates)) 8d-1))))
+
+(test descriptor-matching/combined
+  (loop repeat 10
+        for slice = (select:select *slices* (random (array-dimension *slices* 0))
+                                   (select:range 0 1000) (select:range 0 1000))
+        for s = (1+ (random 2d0))
+        for ϕ = (random (/ pi 2))
+        for slice2 = (sift/debug:rotate-array (sift/debug:scale-array slice s s) ϕ)
+        for m1 = (sift/debug:scale-transform s)
+        for m2 = (sift/debug:rotation-transform (* s 1000) ϕ)
+        for m = (sift:mul3 m2 m1)
+        for rates = (sift/debug:success-rates slice slice2 m) do
+        (is (> (car rates) 150))
+        (is (> (/ (car rates) (cdr rates)) 8d-1))))

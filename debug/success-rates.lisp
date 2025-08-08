@@ -84,6 +84,11 @@
                             0d0 0d0 1d0)))
     (sift:mul3 c (sift:mul3 b a))))
 
+(defun scale-transform (s)
+  (sift:make-mat3  s  0d0 0d0
+                   0d0  s  0d0
+                   0d0 0d0 1d0))
+
 (defun success-rates (data1 data2 m &key (spatial-error 4d0))
   (let* ((kp1 (sift:keypoints (sift:gaussian-scale-space data1)))
          (kp2 (sift:keypoints (sift:gaussian-scale-space data2)))
@@ -103,9 +108,7 @@
 (defun success-rates-scaling (data)
   (loop for s from 1d0 to 2d0 by 1d-2
         for trans = (scale-array data s s)
-        for m = (sift:make-mat3  s  0d0 0d0
-                                0d0  s  0d0
-                                0d0 0d0 1d0)
+        for m = (scale-transform s)
         do (format t "Current scale level: ~f~%" s)
         collect (cons s (success-rates data trans m))))
 
