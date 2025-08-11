@@ -20,6 +20,10 @@ jobs:
         with:
           repository: shamazmazum/docparser
           path: ~/lisp/docparser
+      - name: Install dependencies
+        run: |
+          sudo apt update
+          sudo apt install libfftw3-dev build-essential
       - name: Install roswell
         run: |
           curl -L https://raw.githubusercontent.com/roswell/roswell/master/scripts/install-for-ci.sh | sh
