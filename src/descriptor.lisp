@@ -71,6 +71,7 @@
        (let* ((neighbor (make-vec3 0d0 (- i shift) (- j shift)))
               (rotated (mul-m3v3 m neighbor))
               (coord (add3 (keypoint-coord keypoint) rotated)))
+         (declare (dynamic-extent neighbor rotated coord))
          (multiple-value-bind (bin-i wi)
              (idx->bin i)
            (declare (type fixnum bin-i))

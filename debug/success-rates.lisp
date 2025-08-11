@@ -118,4 +118,3 @@
         for m = (rotation-transform (float (array-dimension data 0) 0d0) ϕ)
         do (format t "Current rotation angle: ~f~%" ϕ)
         collect (cons ϕ (success-rates data trans m))))
-

@@ -52,6 +52,7 @@
                      (trace (trace2 subhessian))
                      (det (det2 subhessian))
                      (r 10d0))
+                (declare (dynamic-extent subhessian))
                 ;; Discard a keypoint with big ratio of principal curvatures
                 (if (and (> det 0)
                          (< (/ (expt trace 2) det) (/ (expt (1+ r) 2) r)))

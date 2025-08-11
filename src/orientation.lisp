@@ -67,6 +67,7 @@ point."
     (loop-ranges ((i 0 l) (j 0 l))
      (let* ((diff (make-vec3 0d0 (float (- i w) 0d0) (float (- j w) 0d0)))
             (coord (add3 diff (keypoint-coord keypoint))))
+       (declare (dynamic-extent diff coord))
        (multiple-value-bind (phase magnitude)
            (evaluate-neighbor gaussian coord)
          (multiple-value-bind (bin1 bin2 w)

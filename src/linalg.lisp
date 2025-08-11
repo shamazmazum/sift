@@ -97,16 +97,6 @@ level."
   (make-mat2 (aref m 1 1) (aref m 1 2)
              (aref m 2 1) (aref m 2 2)))
 
-(sera:-> scalem3 ((mat 3) double-float)
-         (values (mat 3) &optional))
-(declaim (inline scalem3))
-(defun scalem3 (m s)
-  (let ((result (make-array '(3 3) :element-type 'double-float)))
-    (loop for i below (array-total-size result) do
-          (setf (row-major-aref result i)
-                (* (row-major-aref m i) s)))
-    result))
-
 (sera:-> mul3 ((mat 3) (mat 3))
          (values (mat 3) &optional))
 (declaim (inline mul3))
@@ -139,15 +129,6 @@ level."
 (declaim (inline trace3))
 (defun trace3 (m)
   (+ (aref m 0 0) (aref m 1 1) (aref m 2 2)))
-
-(sera:-> transpose3 ((mat 3))
-         (values (mat 3) &optional))
-(declaim (inline transpose3))
-(defun transpose3 (m)
-  (let ((result (make-array '(3 3) :element-type 'double-float)))
-    (loop-array (result (i j))
-     (setf (aref result i j) (aref m j i)))
-    result))
 
 (sera:-> inv3 ((mat 3))
          (values (mat 3) &optional))
@@ -182,16 +163,6 @@ level."
     
 ;; Matrix 2x2
 
-(sera:-> scalem2 ((mat 2) double-float)
-         (values (mat 2) &optional))
-(declaim (inline scalem2))
-(defun scalem2 (m s)
-  (let ((result (make-array '(2 2) :element-type 'double-float)))
-    (loop for i below (array-total-size result) do
-          (setf (row-major-aref result i)
-                (* (row-major-aref m i) s)))
-    result))
-
 (sera:-> mul2 ((mat 2) (mat 2))
          (values (mat 2) &optional))
 (declaim (inline mul2))
@@ -217,15 +188,6 @@ level."
 (declaim (inline trace2))
 (defun trace2 (m)
   (+ (aref m 0 0) (aref m 1 1)))
-
-(sera:-> transpose2 ((mat 2))
-         (values (mat 2) &optional))
-(declaim (inline transpose2))
-(defun transpose2 (m)
-  (let ((result (make-array '(2 2) :element-type 'double-float)))
-    (loop-array (result (i j))
-     (setf (aref result i j) (aref m j i)))
-    result))
 
 (sera:-> inv2 ((mat 2))
          (values (mat 2) &optional))
