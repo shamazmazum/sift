@@ -20,8 +20,8 @@
 
 (sera:-> interpolate (scalar-field double-float double-float double-float)
          (values double-float &optional))
+(declaim (inline interpolate))
 (defun interpolate (f x y z)
-  (declare (optimize (speed 3)))
   (bind-coords ((qx rx x)
                 (qy ry y)
                 (qz rz z))

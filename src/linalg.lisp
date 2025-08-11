@@ -38,8 +38,8 @@
 
 (sera:-> dist3 ((vec 3) (vec 3))
          (values double-float &optional))
+(declaim (inline dist3))
 (defun dist3 (v1 v2)
-  (declare (optimize (speed 3)))
   (sqrt
    (loop for i below 3 sum
          (expt (- (aref v1 i) (aref v2 i)) 2)
@@ -47,8 +47,8 @@
 
 (sera:-> add3 ((vec 3) (vec 3))
          (values (vec 3) &optional))
+(declaim (inline add3))
 (defun add3 (v1 v2)
-  (declare (optimize (speed 3)))
   (let ((result (make-array 3 :element-type 'double-float)))
     (loop-array (result (i))
      (setf (aref result i)
@@ -57,8 +57,8 @@
 
 (sera:-> scalev3 ((vec 3) double-float)
          (values (vec 3) &optional))
+(declaim (inline scalev3))
 (defun scalev3 (v s)
-  (declare (optimize (speed 3)))
   (let ((result (make-array 3 :element-type 'double-float)))
     (loop-array (result (i))
      (setf (aref result i)
@@ -67,16 +67,16 @@
 
 (sera:-> dot3 ((vec 3) (vec 3))
          (values double-float &optional))
+(declaim (inline dot3))
 (defun dot3 (v1 v2)
-  (declare (optimize (speed 3)))
   (loop for x1 across v1
         for x2 across v2
         sum (* x1 x2) double-float))
 
 (sera:-> mul-m3v3 ((mat 3) (vec 3))
          (values (vec 3) &optional))
+(declaim (inline mul-m3v3))
 (defun mul-m3v3 (m v)
-  (declare (optimize (speed 3)))
   (let ((result (make-array 3 :element-type 'double-float)))
     (loop-array (result (i))
      (setf (aref result i)
@@ -90,6 +90,7 @@
 
 (sera:-> shrink3 ((mat 3))
          (values (mat 2) &optional))
+(declaim (inline shrink3))
 (defun shrink3 (m)
   "Remove the first row and column which are related to the scale
 level."
@@ -98,8 +99,8 @@ level."
 
 (sera:-> scalem3 ((mat 3) double-float)
          (values (mat 3) &optional))
+(declaim (inline scalem3))
 (defun scalem3 (m s)
-  (declare (optimize (speed 3)))
   (let ((result (make-array '(3 3) :element-type 'double-float)))
     (loop for i below (array-total-size result) do
           (setf (row-major-aref result i)
@@ -108,8 +109,8 @@ level."
 
 (sera:-> mul3 ((mat 3) (mat 3))
          (values (mat 3) &optional))
+(declaim (inline mul3))
 (defun mul3 (m1 m2)
-  (declare (optimize (speed 3)))
   (let ((result (make-array '(3 3) :element-type 'double-float)))
     (loop-array (result (i j))
      (setf (aref result i j)
@@ -135,14 +136,14 @@ level."
 
 (sera:-> trace3 ((mat 3))
          (values double-float &optional))
+(declaim (inline trace3))
 (defun trace3 (m)
-  (declare (optimize (speed 3)))
   (+ (aref m 0 0) (aref m 1 1) (aref m 2 2)))
 
 (sera:-> transpose3 ((mat 3))
          (values (mat 3) &optional))
+(declaim (inline transpose3))
 (defun transpose3 (m)
-  (declare (optimize (speed 3)))
   (let ((result (make-array '(3 3) :element-type 'double-float)))
     (loop-array (result (i j))
      (setf (aref result i j) (aref m j i)))
@@ -183,8 +184,8 @@ level."
 
 (sera:-> scalem2 ((mat 2) double-float)
          (values (mat 2) &optional))
+(declaim (inline scalem2))
 (defun scalem2 (m s)
-  (declare (optimize (speed 3)))
   (let ((result (make-array '(2 2) :element-type 'double-float)))
     (loop for i below (array-total-size result) do
           (setf (row-major-aref result i)
@@ -193,8 +194,8 @@ level."
 
 (sera:-> mul2 ((mat 2) (mat 2))
          (values (mat 2) &optional))
+(declaim (inline mul2))
 (defun mul2 (m1 m2)
-  (declare (optimize (speed 3)))
   (let ((result (make-array '(2 2) :element-type 'double-float)))
     (loop-array (result (i j))
      (setf (aref result i j)
@@ -206,21 +207,21 @@ level."
 
 (sera:-> det2 ((mat 2))
          (values double-float &optional))
+(declaim (inline det2))
 (defun det2 (m)
-  (declare (optimize (speed 3)))
   (- (* (aref m 0 0) (aref m 1 1))
      (* (aref m 1 0) (aref m 0 1))))
 
 (sera:-> trace2 ((mat 2))
          (values double-float &optional))
+(declaim (inline trace2))
 (defun trace2 (m)
-  (declare (optimize (speed 3)))
   (+ (aref m 0 0) (aref m 1 1)))
 
 (sera:-> transpose2 ((mat 2))
          (values (mat 2) &optional))
+(declaim (inline transpose2))
 (defun transpose2 (m)
-  (declare (optimize (speed 3)))
   (let ((result (make-array '(2 2) :element-type 'double-float)))
     (loop-array (result (i j))
      (setf (aref result i j) (aref m j i)))

@@ -16,8 +16,8 @@
 
 (sera:-> derivative/1 (scalar-field index3 index3)
          (values double-float &optional))
+(declaim (inline derivative/1))
 (defun derivative/1 (f index dir)
-  (declare (optimize (speed 3)))
   (let ((p1 (index3-+ index dir))
         (p2 (index3-- index dir)))
     (declare (dynamic-extent p1 p2))
@@ -25,8 +25,8 @@
 
 (sera:-> gradient (scalar-field index3)
          (values (vec 3) &optional))
+(declaim (inline gradient))
 (defun gradient (f index)
-  (declare (optimize (speed 3)))
   (make-vec3
    (derivative/1 f index +shift-x+)
    (derivative/1 f index +shift-y+)
@@ -41,8 +41,8 @@
 
 (sera:-> derivative/2m (scalar-field index3 index3 index3)
          (values double-float &optional))
+(declaim (inline derivative/2m))
 (defun derivative/2m (f index dir1 dir2)
-  (declare (optimize (speed 3)))
   (let* ((p1 (index3-+ index dir1))
          (p2 (index3-- index dir1))
          (d1 (derivative/1 f p1 dir2))
@@ -53,8 +53,8 @@
 ;; NB: Does not go out of bounds!
 (sera:-> derivative/2 (scalar-field index3 index3)
          (values double-float &optional))
+(declaim (inline derivative/2))
 (defun derivative/2 (f index shift)
-  (declare (optimize (speed 3)))
   (let ((p1 (index3-+ index shift))
         (p2 (index3-- index shift)))
     (declare (dynamic-extent p1 p2))
@@ -62,8 +62,8 @@
 
 (sera:-> hessian (scalar-field index3)
          (values (mat 3) &optional))
+(declaim (inline hessian))
 (defun hessian (f index)
-  (declare (optimize (speed 3)))
   (let ((xx (derivative/2  f index +shift-x+))
         (yy (derivative/2  f index +shift-y+))
         (zz (derivative/2  f index +shift-z+))
