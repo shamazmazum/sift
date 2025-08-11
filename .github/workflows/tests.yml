@@ -20,4 +20,4 @@ jobs:
           ros -e '(ql-dist:install-dist "http://dist.ultralisp.org/" :prompt nil)'
       - name: Run tests
         run: |
-          ros -l $GITHUB_WORKSPACE/tests/ci.lisp
+          ros dynamic-space-size=16gb -l $GITHUB_WORKSPACE/tests/ci.lisp
