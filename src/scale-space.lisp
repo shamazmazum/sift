@@ -47,9 +47,9 @@ one image below it + 2 images above."
           (:m alex:positive-fixnum))
          (values scale-space &optional))
 (defun gaussian-scale-space (a &key (σ 1.6d0) (n 3) (m 3))
-  "Compute a set of blurred images of A which constitutes a scale
-space of A with M octaves, N images per octave. Each octave also
-contains one image below it and two images above it."
+  "Compute a set of blurred images of @c(A) which constitutes a scale
+space of @c(A) with @c(M) octaves, @c(N) images per octave. Each
+octave also contains one image below it and two images above it."
   (declare (optimize (speed 3)))
   (let ((σs (gaussian-parameters/octave σ n)))
     (labels ((%go (a m acc)

@@ -1,0 +1,54 @@
+@begin[ref=index](section)
+   @title(Overview)
+   @c(SIFT) is a library which implements an algorithm of the same name which is
+   used for image features describing. The resulting descriptors are scale and
+   rotation invariant and insensitive to noise.
+
+   An example:
+   @begin[lang=lisp](code)
+(let* ((data1 (sift/debug:load-image "img.png"))
+       ;; Scale and rotate the image
+       (data2 (sift/debug:rotate-array (sift/debug:scale-array *foo* 1.4d0 1.4d0) 3d-1))
+       ;; Calculate keypoints and descriptors
+       (kp1 (sift:descriptors (sift:gaussian-scale-space data1)))
+       (kp2 (sift:descriptors (sift:gaussian-scale-space data2)))
+       ;; Find matches
+       (matches (sift:find-matches kp1 kp2)))
+  ;; Draw matches using imago
+  (sift/debug:draw-matches data1 data2 matches))
+   @end(code)
+
+   @image[src="matches.png"]()
+
+   Citation of the original algo:
+   Lowe, D.G. Distinctive Image Features from Scale-Invariant
+   Keypoints. International Journal of Computer Vision 60, 91–110
+   (2004). https://doi.org/10.1023/B:VISI.0000029664.99615.94
+@end(section)
+
+@begin(section)
+   @title(How-to)
+   First of all, convert your image to a two-dimensional array of double floats
+   where elements vary from zero to one. Than convert the array to a Gaussian
+   scale space representation using @c(gaussian-scale-space). I recommend
+   leaving keyword parameters as is. Read the original paper if you want to know
+   their meaning. After that, use either @c(descriptors) (the fast way) or
+   @c(keypoints) and maybe @c(describe-point) to get keypoints and (optionally)
+   descriptors. You can use @c(find-matches) to match the descriptors against
+   another set of descriptors from another image.
+@end(section)
+
+@begin(section)
+   @title(API)
+
+   @cl:with-package[name="sift"](
+     @cl:doc(function gaussian-scale-space)
+     @cl:doc(function keypoints)
+     @cl:doc(function descriptors)
+     @cl:doc(function describe-point)
+     @cl:doc(function find-matches)
+     @cl:doc(defconstructor keypoint)
+     @cl:doc(defconstructor descriptor)
+     @cl:doc(function image-coordinate)
+   )
+@end(section)

@@ -35,6 +35,7 @@
                normalized))))
 
 (sera:defconstructor descriptor
+  "A structure which containt a keypoint and an associated descriptor"
   (keypoint keypoint)
   (array    %descriptor))
 

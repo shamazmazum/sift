@@ -1,6 +1,7 @@
 (in-package :sift)
 
 (sera:defconstructor keypoint
+  "A structure which describes a keypoint in an image."
   (coord  (vec 3))
   (index  index3)
   (octave alex:non-negative-fixnum)
