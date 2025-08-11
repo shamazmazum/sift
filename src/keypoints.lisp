@@ -23,8 +23,14 @@
        (let ((v (aref array (+ l %l) (mod (+ i %i) h) (mod (+ j %j) w))))
          (setq min (min min v)
                max (max max v)))))
+    ;; A point is a keypoint if its value in DoG space is greater than
+    ;; all its neighbors or lesser than all of its neighbors.
     (or (< v min) (> v max))))
 
+;; The original paper says something like "If an adjusted coordinate
+;; of a keypoint is further than 0.5 at any coordinate, choose a new
+;; keypoint and adjust it again". In this library, however, such a
+;; keypoint is simply dropped.
 (sera:-> shift-ok-p ((vec 3))
          (values boolean &optional))
 (defun shift-ok-p (shift)
@@ -53,7 +59,8 @@
                      (det (det2 subhessian))
                      (r 10d0))
                 (declare (dynamic-extent subhessian))
-                ;; Discard a keypoint with big ratio of principal curvatures
+                ;; Discard a keypoint with big ratio of principal
+                ;; curvatures or negative determinant of Hessian.
                 (if (and (> det 0)
                          (< (/ (expt trace 2) det) (/ (expt (1+ r) 2) r)))
                     (add-coord keypoint diff))))))))
@@ -97,6 +104,7 @@
 
 (sera:-> keypoints (scale-space) (values list &optional))
 (defun keypoints (scale-space)
+  "Detect keypoints in a scale space."
   (reduce
    (lambda (keypoint acc)
      ;; One keypoint may spawn more keypoints with the same location

@@ -49,7 +49,11 @@
 (defun aref-index3/p (array idx)
   (aref array
         ;; Periodic boundary conditions on the layer coordinate is not
-        ;; what I want.
+        ;; what I want. On spatial dimensions, though, they are
+        ;; acceptable. Moreover, I do image filtering via FFT which
+        ;; imposes periodic BC. If this is a problem, we can simply
+        ;; discard keypoints which are close (~10 pixels) to the
+        ;; boundary.
         (index3-i idx)
         (mod (index3-j idx) (array-dimension array 1))
         (mod (index3-k idx) (array-dimension array 2))))
@@ -77,12 +81,7 @@
 (defun (setf aref-index3) (v array idx)
   (setf (aref array (index3-i idx) (index3-j idx) (index3-k idx)) v))
 
-(declaim (inline index3-in-bounds-p))
-(sera:-> index3-in-bounds-p ((simple-array * (* * *)) index3)
-         (values boolean &optional))
-(defun index3-in-bounds-p (array idx)
-  (array-in-bounds-p array (index3-i idx) (index3-j idx) (index3-k idx)))
-
+;; Useful macros for iteration which supersede nested loops
 (defmacro loop-array ((array indices) &body body)
   (car
    (reduce

@@ -96,10 +96,10 @@
          (correct 0))
     (loop for (kp1 . kp2) in matches
           for kp-coord = (multiple-value-call #'sift:make-vec3
-                           (sift:global-coordinate kp1) 1d0)
+                           (sift:image-coordinate kp1) 1d0)
           for expected-coord = (sift:mul-m3v3 m kp-coord)
           for match-coord = (multiple-value-call #'sift:make-vec3
-                              (sift:global-coordinate kp2) 1d0)
+                              (sift:image-coordinate kp2) 1d0)
           ;; This match is close enough to the expected position
           when (< (sift:dist3 expected-coord match-coord) spatial-error) do
           (incf correct))

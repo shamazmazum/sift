@@ -1,5 +1,7 @@
 (in-package :sift)
 
+;; Downsample an image using the ideal low-pass filter
+
 (sera:-> cut-ranges (alex:positive-fixnum alex:positive-fixnum)
          (values alex:non-negative-fixnum
                  alex:non-negative-fixnum

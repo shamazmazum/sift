@@ -5,6 +5,8 @@
          (values (double-float (0d0)) &optional))
 (declaim (inline gaussian-parameter))
 (defun gaussian-parameter (σ k n)
+  "Calculate the parameter of Gaussian filter for the k-th image of
+ascale space with N images in octave."
   (* σ (expt 2d0 (/ k n))))
 
 (sera:-> gaussian-parameters/octave
@@ -12,6 +14,8 @@
          (values list &optional))
 (declaim (inline gaussian-parameters/octave))
 (defun gaussian-parameters/octave (σ n)
+  "Calculate parameters of Gaussian filter for all images in octave +
+one image below it + 2 images above."
   (loop for k from -1 below (+ n 2) collect
         (gaussian-parameter σ k n)))
 
@@ -43,8 +47,9 @@
           (:m alex:positive-fixnum))
          (values scale-space &optional))
 (defun gaussian-scale-space (a &key (σ 1.6d0) (n 3) (m 3))
-  "Compute a set of blurred images of A which constitutes the scale
-space of A with M octaves, N+3 images per octave."
+  "Compute a set of blurred images of A which constitutes a scale
+space of A with M octaves, N images per octave. Each octave also
+contains one image below it and two images above it."
   (declare (optimize (speed 3)))
   (let ((σs (gaussian-parameters/octave σ n)))
     (labels ((%go (a m acc)
@@ -60,6 +65,7 @@ space of A with M octaves, N+3 images per octave."
 (sera:-> gaussian->dog ((simple-array double-float (* * *)))
          (values (simple-array double-float (* * *)) &optional))
 (defun gaussian->dog (octave)
+  "Convert a Gausian scale space to difference of Gaussians space."
   (declare (optimize (speed 3)))
   (let* ((nl (array-dimension octave 0))
          (h  (array-dimension octave 1))

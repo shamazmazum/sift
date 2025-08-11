@@ -26,6 +26,7 @@
          (values %descriptor &optional))
 (defun descriptor-postprocess! (descriptor)
   (declare (optimize (speed 3)))
+  ;; Here we normalize, clamp to [0, 0.2] and normalize again
   (let ((normalized (normalize-descriptor! descriptor)))
     (normalize-descriptor!
      (map-into normalized
@@ -40,6 +41,9 @@
 (sera:-> describe-point (keypoint scale-space)
          (values %descriptor &optional))
 (defun describe-point (keypoint scale-space)
+  "Describe a keypoint in a scale space. The descriptor is a vector of 128 float values
+which is invariant to linear transformations of the image which produced this scale
+space."
   (declare (optimize (speed 3)))
   (let* ((descriptor (make-array '(4 4 8)
                                  :element-type 'double-float
@@ -83,6 +87,9 @@
                (multiple-value-bind (bin-o bin-o+1 wo)
                    (angle->bins (- kp-angle angle) 8)
                  (let ((v (* norm (gaussian (* σ 4) neighbor))))
+                   ;; Here is this "trilinear interpolation" which means that we
+                   ;; distribute V between 8 bins (a combination of two bins for each
+                   ;; dimension: two space dimensions and the angle).
                    (incf-descr! bin-i bin-j bin-o
                                 (* v wi wj wo))
                    (incf-descr! bin-i bin-j bin-o+1
@@ -105,6 +112,7 @@
 (sera:-> descriptors (scale-space)
          (values list &optional))
 (defun descriptors (scale-space)
+  "Calculate keypoints and descriptors (128-element vectors) for a scale space."
   (mapcar
    (lambda (keypoint)
      (descriptor keypoint (describe-point keypoint scale-space)))

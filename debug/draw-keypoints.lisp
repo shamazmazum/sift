@@ -2,7 +2,7 @@
 
 (defun adjust-coordinates (keypoint)
   (multiple-value-bind (x y)
-      (sift:global-coordinate keypoint)
+      (sift:image-coordinate keypoint)
     (cons (floor x)
           (floor y))))
 

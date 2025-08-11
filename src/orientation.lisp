@@ -88,7 +88,7 @@ point."
         with max double-float = (reduce #'max histogram)
         for bin below 36
         for c = (aref histogram bin)
-        ;; Access pattern can be circular since this is histogram of
+        ;; Access pattern is circular since this is a histogram of
         ;; angles in the range [0, 2pi).
         for l = (aref histogram (mod (1- bin) 36))
         for r = (aref histogram (mod (1+ bin) 36))

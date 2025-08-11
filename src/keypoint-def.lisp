@@ -29,10 +29,11 @@
 (defun new-angle (keypoint angle)
   (picolens:set #'kp-angle angle keypoint))
 
-(sera:-> global-coordinate (keypoint)
+(sera:-> image-coordinate (keypoint)
          (values double-float double-float &optional))
-(defun global-coordinate (keypoint)
-  "Return global coordinates (at the scale level 0) of a keypoint."
+(defun image-coordinate (keypoint)
+  "Return coordinates of a keypoint in a coordinate system of the
+image (scale level 0)."
   (let ((scale (expt 2 (keypoint-octave keypoint)))
         (coord (keypoint-coord keypoint)))
     (values (* (aref coord 1) scale)

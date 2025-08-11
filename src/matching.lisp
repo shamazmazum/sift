@@ -13,6 +13,10 @@
 (sera:-> find-matches (list list)
          (values list &optional))
 (defun find-matches (set1 set2)
+  "Find matching keypoints in SET1 and SET2. A point from the first
+set can have at most one corresponding point from the second
+set. Algoritmic complexity: O(n*m), n and m being numbers of elements
+in each set."
   (declare (optimize (speed 3)))
   (reduce
    (lambda (acc dk1)
