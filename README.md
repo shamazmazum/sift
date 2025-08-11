@@ -1,4 +1,5 @@
 # SIFT
+[![](https://img.shields.io/badge/docs-stable-blue.svg)](https://shamazmazum.github.io/sift)
 
 This library implements an algorithm described in a paper of the same name:
 
