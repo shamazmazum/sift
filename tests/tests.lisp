@@ -155,42 +155,36 @@
   (let* ((rates (sift/debug:success-rates a1 a2 m))
          (nsucc (car rates))
          (rsucc (/ (car rates) (cdr rates))))
-    (is (> nsucc 150))
-    (is (> rsucc 6.5d-1))
+    (is (> nsucc 500))
+    (is (> rsucc 9d-1))
     rsucc))
 
 (test descriptor-matching/scale
-  (let ((result
-         (loop repeat 50
-               for slice = (select:select *slices* (random (array-dimension *slices* 0))
-                                          (select:range 0 1000) (select:range 0 1000))
-               for s = (1+ (random 2d0))
-               for slice2 = (sift/debug:scale-array slice s s)
-               for m = (sift/debug:scale-transform s) sum
-               (test-matches slice slice2 m))))
-    (is (> (/ result 50) 9d-1))))
+  (loop repeat 50
+        for slice = (select:select *slices* (random (array-dimension *slices* 0))
+                                   (select:range 0 1000) (select:range 0 1000))
+        for s = (1+ (random 2d0))
+        for slice2 = (sift/debug:scale-array slice s s)
+        for m = (sift/debug:scale-transform s) sum
+        (test-matches slice slice2 m)))
 
 (test descriptor-matching/rotation
-  (let ((result
-         (loop repeat 50
-               for slice = (select:select *slices* (random (array-dimension *slices* 0))
-                                          (select:range 0 1000) (select:range 0 1000))
-               for ϕ = (random (/ pi 2))
-               for slice2 = (sift/debug:rotate-array slice ϕ)
-               for m = (sift/debug:rotation-transform 1000 ϕ) sum
-               (test-matches slice slice2 m))))
-    (is (> (/ result 50) 9d-1))))
+  (loop repeat 50
+        for slice = (select:select *slices* (random (array-dimension *slices* 0))
+                                   (select:range 0 1000) (select:range 0 1000))
+        for ϕ = (random (/ pi 2))
+        for slice2 = (sift/debug:rotate-array slice ϕ)
+        for m = (sift/debug:rotation-transform 1000 ϕ) sum
+        (test-matches slice slice2 m)))
 
 (test descriptor-matching/combined
-  (let ((result
-         (loop repeat 50
-               for slice = (select:select *slices* (random (array-dimension *slices* 0))
-                                          (select:range 0 1000) (select:range 0 1000))
-               for s = (1+ (random 2d0))
-               for ϕ = (random (/ pi 2))
-               for slice2 = (sift/debug:rotate-array (sift/debug:scale-array slice s s) ϕ)
-               for m1 = (sift/debug:scale-transform s)
-               for m2 = (sift/debug:rotation-transform (* s 1000) ϕ)
-               for m = (sift:mul3 m2 m1) sum
-               (test-matches slice slice2 m))))
-    (is (> (/ result 50) 9d-1))))
+  (loop repeat 50
+        for slice = (select:select *slices* (random (array-dimension *slices* 0))
+                                   (select:range 0 1000) (select:range 0 1000))
+        for s = (1+ (random 2d0))
+        for ϕ = (random (/ pi 2))
+        for slice2 = (sift/debug:rotate-array (sift/debug:scale-array slice s s) ϕ)
+        for m1 = (sift/debug:scale-transform s)
+        for m2 = (sift/debug:rotation-transform (* s 1000) ϕ)
+        for m = (sift:mul3 m2 m1) sum
+        (test-matches slice slice2 m)))

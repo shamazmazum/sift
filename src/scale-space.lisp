@@ -42,7 +42,7 @@
           (:n alex:positive-fixnum)
           (:m alex:positive-fixnum))
          (values scale-space &optional))
-(defun gaussian-scale-space (a &key (σ 1.5d0) (n 3) (m 3))
+(defun gaussian-scale-space (a &key (σ 1.6d0) (n 3) (m 3))
   "Compute a set of blurred images of A which constitutes the scale
 space of A with M octaves, N+3 images per octave."
   (declare (optimize (speed 3)))
