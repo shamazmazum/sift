@@ -1,5 +1,7 @@
 (in-package :sift/tests)
 
+(defparameter *number-of-runs* 50)
+
 (defun run-tests ()
   (every #'identity
          (mapcar (lambda (suite)
@@ -160,7 +162,7 @@
     rsucc))
 
 (test descriptor-matching/scale
-  (loop repeat 50
+  (loop repeat *number-of-runs*
         for slice = (select:select *slices* (random (array-dimension *slices* 0))
                                    (select:range 0 1000) (select:range 0 1000))
         for s = (1+ (random 2d0))
@@ -169,7 +171,7 @@
         (test-matches slice slice2 m)))
 
 (test descriptor-matching/rotation
-  (loop repeat 50
+  (loop repeat *number-of-runs*
         for slice = (select:select *slices* (random (array-dimension *slices* 0))
                                    (select:range 0 1000) (select:range 0 1000))
         for ϕ = (random (/ pi 2))
@@ -178,7 +180,7 @@
         (test-matches slice slice2 m)))
 
 (test descriptor-matching/combined
-  (loop repeat 50
+  (loop repeat *number-of-runs*
         for slice = (select:select *slices* (random (array-dimension *slices* 0))
                                    (select:range 0 1000) (select:range 0 1000))
         for s = (1+ (random 2d0))
