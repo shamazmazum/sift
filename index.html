@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+  Overview &ndash; SIFT (scale-invariant feature descriptors) for Common Lisp
+</title>
+    <link rel="stylesheet" href="static/style.css"/>
+    
+  <link rel="stylesheet" href="static/highlight.css"/>
+  <script src="static/highlight.js"></script>
+  <script src="static/load-mathjax.js" async></script>
+  <style>
+   /* Highlight the current top-level TOC item, and hide the TOC of all other items */
+
+   .toc a[data-node="index"] {
+       /*color: #AD3108;*/
+   }
+
+   .toc ol {
+       display: none;
+   }
+
+   .toc li a[data-node="index"] {
+       font-weight: bold;
+   }
+
+   .toc li a[data-node="index"] + ol {
+       display: block;
+   }
+
+   .toc li a[data-node="index"] + ol li {
+       margin-left: 10px;
+   }
+  </style>
+
+  </head>
+  <body>
+    
+  <h1 class="doc-title">SIFT (scale-invariant feature descriptors) for Common Lisp</h1>
+  <article id="article" data-section="index">
+    <aside>
+      <ol class="toc"><li><a href="index.html" data-node="index">Overview</a></li><li><a href="how-to.html" data-node="how-to">How-to</a></li><li><a href="api.html" data-node="api">API</a></li></ol>
+    </aside>
+    <main class="codex-section">
+      <header>
+        <h2 class="section-title">Overview</h2>
+      </header>
+      <div class="content">
+        <p>
+   <code>SIFT</code> is a library which implements an algorithm of the same name which is
+   used for image features describing. The resulting descriptors are scale and
+   rotation invariant and insensitive to noise.</p><p>   An example:
+   </p><pre><code class="lisp">(let* ((data1 (sift/debug:load-image &quot;img.png&quot;))
+       ;; Scale and rotate the image
+       (data2 (sift/debug:rotate-array (sift/debug:scale-array *foo* 1.4d0 1.4d0) 3d-1))
+       ;; Calculate keypoints and descriptors
+       (kp1 (sift:descriptors (sift:gaussian-scale-space data1)))
+       (kp2 (sift:descriptors (sift:gaussian-scale-space data2)))
+       ;; Find matches
+       (matches (sift:find-matches kp1 kp2)))
+  ;; Draw matches using imago
+  (sift/debug:draw-matches data1 data2 matches))
+   </code></pre><p>   <img src="matches.png"/></p><p>   Citation of the original algo:
+   Lowe, D.G. Distinctive Image Features from Scale-Invariant
+   Keypoints. International Journal of Computer Vision 60, 91–110
+   (2004). https://doi.org/10.1023/B:VISI.0000029664.99615.94
+</p>
+      </div>
+    </main>
+  </article>
+  <footer>
+    <div class="info">
+      Created with <a href="https://github.com/CommonDoc/codex">Codex</a>.
+    </div>
+  </footer>
+  <script>
+   HighlightLisp.highlight_auto();
+  </script>
+
+  </body>
+</html>

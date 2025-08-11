@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>
+  How-to &ndash; SIFT (scale-invariant feature descriptors) for Common Lisp
+</title>
+    <link rel="stylesheet" href="static/style.css"/>
+    
+  <link rel="stylesheet" href="static/highlight.css"/>
+  <script src="static/highlight.js"></script>
+  <script src="static/load-mathjax.js" async></script>
+  <style>
+   /* Highlight the current top-level TOC item, and hide the TOC of all other items */
+
+   .toc a[data-node="how-to"] {
+       /*color: #AD3108;*/
+   }
+
+   .toc ol {
+       display: none;
+   }
+
+   .toc li a[data-node="how-to"] {
+       font-weight: bold;
+   }
+
+   .toc li a[data-node="how-to"] + ol {
+       display: block;
+   }
+
+   .toc li a[data-node="how-to"] + ol li {
+       margin-left: 10px;
+   }
+  </style>
+
+  </head>
+  <body>
+    
+  <h1 class="doc-title">SIFT (scale-invariant feature descriptors) for Common Lisp</h1>
+  <article id="article" data-section="how-to">
+    <aside>
+      <ol class="toc"><li><a href="index.html" data-node="index">Overview</a></li><li><a href="how-to.html" data-node="how-to">How-to</a></li><li><a href="api.html" data-node="api">API</a></li></ol>
+    </aside>
+    <main class="codex-section">
+      <header>
+        <h2 class="section-title">How-to</h2>
+      </header>
+      <div class="content">
+        
+   First of all, convert your image to a two-dimensional array of double floats
+   where elements vary from zero to one. Than convert the array to a Gaussian
+   scale space representation using <code>gaussian-scale-space</code>. I recommend
+   leaving keyword parameters as is. Read the original paper if you want to know
+   their meaning. After that, use either <code>descriptors</code>(the fast way) or
+   <code>keypoints</code> and maybe <code>describe-point</code> to get keypoints and (optionally)
+   descriptors. You can use <code>find-matches</code> to match the descriptors against
+   another set of descriptors from another image.
+
+      </div>
+    </main>
+  </article>
+  <footer>
+    <div class="info">
+      Created with <a href="https://github.com/CommonDoc/codex">Codex</a>.
+    </div>
+  </footer>
+  <script>
+   HighlightLisp.highlight_auto();
+  </script>
+
+  </body>
+</html>
