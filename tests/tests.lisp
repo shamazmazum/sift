@@ -8,7 +8,7 @@
                    (let ((status (run suite)))
                      (explain! status)
                      (results-status status)))
-                 '(linalg3 linalg2 interp descr))))
+                 '(linalg3 linalg2 interp descr regis))))
 
 (defun approx-= (x y)
   (< (abs (- x y)) 1d-8))
@@ -73,6 +73,7 @@
 (def-suite linalg2 :description "Linear algebra tests (2x2 matrices)")
 (def-suite interp  :description "Linear interpolation")
 (def-suite descr   :description "SIFT keypoint descriptors")
+(def-suite regis   :description "Image registration with SIFT descriptors")
 
 (in-suite linalg3)
 
@@ -152,7 +153,6 @@
 
 (in-suite descr)
 
-;; TODO: Try to improve successful rate in each separate test
 (defun test-matches (a1 a2 m)
   (let* ((rates (sift/debug:success-rates a1 a2 m))
          (nsucc (car rates))
@@ -190,3 +190,20 @@
         for m2 = (sift/debug:rotation-transform (* s 1000) ϕ)
         for m = (sift:mul3 m2 m1) sum
         (test-matches slice slice2 m)))
+
+(in-suite regis)
+
+(test ransac
+  (loop repeat 500
+        for xs1 = (magicl:scale (magicl:rand '(1000 3)) 100)
+        for m  = (magicl:rand '(3 3))
+        for ys1 = (magicl:@ xs1 m)
+        for xs2 = (magicl:scale (magicl:rand '(20 3)) 10000)
+        for ys2 = (magicl:scale (magicl:rand '(20 3)) 10000)
+        for xs = (magicl:vstack (list xs1 xs2))
+        for ys = (magicl:vstack (list ys1 ys2))
+        for fit = (sift/registration:ransac-fit xs ys 30 10 50 1d0) do
+        (is-true (magicl:every
+                  (lambda (x y)
+                    (< (- x y) 1d-4))
+                  m fit))))

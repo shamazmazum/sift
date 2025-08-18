@@ -50,5 +50,6 @@
      @cl:doc(defconstructor keypoint)
      @cl:doc(defconstructor descriptor)
      @cl:doc(function image-coordinate)
+     @cl:doc(function image-coordinate-vector)
    )
 @end(section)

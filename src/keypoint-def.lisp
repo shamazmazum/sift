@@ -39,3 +39,13 @@ image (scale level 0)."
         (coord (keypoint-coord keypoint)))
     (values (* (aref coord 1) scale)
             (* (aref coord 2) scale))))
+
+(sera:-> image-coordinate-vector (keypoint)
+         (values (vec 3) &optional))
+(defun image-coordinate-vector (keypoint)
+  "Return coordinates of a keypoint in a coordinate system of the
+image (scale level 0) as an augmented vector (3-component vector with
+the last element being equal to 1)."
+  (multiple-value-bind (x y)
+      (image-coordinate keypoint)
+    (make-vec3 x y 1d0)))

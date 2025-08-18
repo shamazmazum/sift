@@ -5,7 +5,7 @@
                     (#:ff   #:float-features))
   (:export #:gaussian-scale-space
            #:keypoints
-           #:image-coordinate
+           #:image-coordinate #:image-coordinate-vector
            #:describe-point
            #:descriptors
            #:descriptor
