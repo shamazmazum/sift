@@ -58,28 +58,11 @@
         (mod (index3-j idx) (array-dimension array 1))
         (mod (index3-k idx) (array-dimension array 2))))
 
-(declaim (inline (setf aref-index3/p)))
-(sera:-> (setf aref-index3/p) (t (simple-array * (* * *)) index3)
-         (values t &optional))
-(defun (setf aref-index3/p) (v array idx)
-  (setf
-   (aref array
-         (index3-i idx)
-         (mod (index3-j idx) (array-dimension array 1))
-         (mod (index3-k idx) (array-dimension array 2)))
-   v))
-
 (declaim (inline aref-index3))
 (sera:-> aref-index3 ((simple-array * (* * *)) index3)
          (values t &optional))
 (defun aref-index3 (array idx)
   (aref array (index3-i idx) (index3-j idx) (index3-k idx)))
-
-(declaim (inline (setf aref-index3)))
-(sera:-> (setf aref-index3) (t (simple-array * (* * *)) index3)
-         (values t &optional))
-(defun (setf aref-index3) (v array idx)
-  (setf (aref array (index3-i idx) (index3-j idx) (index3-k idx)) v))
 
 ;; Useful macros for iteration which supersede nested loops
 (defmacro loop-array ((array indices) &body body)
