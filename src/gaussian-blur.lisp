@@ -66,10 +66,10 @@
          (kernel (gaussian-kernel-padded
                   σ (array-dimension array 0) (array-dimension array 1))))
     (normalize!
-     (cl-fftw:%irfft
-      (cl-fftw:with-plan (plan cl-fftw:create-rfft-plan dimensions)
-        (let ((array-fft  (cl-fftw:rfft plan array))
-              (kernel-fft (cl-fftw:rfft plan kernel)))
+     (cl-fftw/double:%irfft
+      (cl-fftw/double:with-plan (plan cl-fftw/double:create-rfft-plan dimensions)
+        (let ((array-fft  (cl-fftw/double:rfft plan array))
+              (kernel-fft (cl-fftw/double:rfft plan kernel)))
           (loop for i below (array-total-size array-fft) do
                 (setf (row-major-aref array-fft i)
                       (* (row-major-aref array-fft  i)
