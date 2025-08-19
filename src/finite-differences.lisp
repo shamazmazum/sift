@@ -1,11 +1,11 @@
 (in-package :sift)
 
 ;; Here we have a function F of type SCALAR-FIELD which takes 3
-;; integer arguments (wrapped in INDEX3) and returns a double
+;; integer arguments (wrapped in INDEX3) and returns a single
 ;; float. Functions in this file compute its Hessian and gradient via
 ;; 2nd order finite differences.
 
-(deftype scalar-field () '(sera:-> (index3) (values double-float &optional)))
+(deftype scalar-field () '(sera:-> (index3) (values single-float &optional)))
 
 (alex:define-constant +shift-x+
     (index3 1 0 0)
@@ -20,7 +20,7 @@
   :test #'equalp)
 
 (sera:-> derivative/1 (scalar-field index3 index3)
-         (values double-float &optional))
+         (values single-float &optional))
 (declaim (inline derivative/1))
 (defun derivative/1 (f index dir)
   (let ((p1 (index3-+ index dir))
@@ -45,7 +45,7 @@
    index))
 
 (sera:-> derivative/2m (scalar-field index3 index3 index3)
-         (values double-float &optional))
+         (values single-float &optional))
 (declaim (inline derivative/2m))
 (defun derivative/2m (f index dir1 dir2)
   (let* ((p1 (index3-+ index dir1))
@@ -58,7 +58,7 @@
 ;; NB: Does not go out of bounds! This way HESSIAN can inspect only 26
 ;; neighbors of a point at INDEX.
 (sera:-> derivative/2 (scalar-field index3 index3)
-         (values double-float &optional))
+         (values single-float &optional))
 (declaim (inline derivative/2))
 (defun derivative/2 (f index shift)
   (let ((p1 (index3-+ index shift))

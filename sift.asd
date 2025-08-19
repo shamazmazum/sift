@@ -19,7 +19,7 @@
                (:file "descriptor")
                (:file "keypoints")
                (:file "matching"))
-  :depends-on (:cl-fftw
+  :depends-on (:cl-fftw/single
                :serapeum
                :alexandria
                :float-features

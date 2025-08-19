@@ -10,7 +10,7 @@
 (defun clamp (v min max)
   (max (min v max) min))
 
-(sera:-> draw-keypoints ((simple-array double-float (* *)) list)
+(sera:-> draw-keypoints ((simple-array single-float (* *)) list)
          (values imago:rgb-image &optional))
 (defun draw-keypoints (array keypoints)
   (let ((image

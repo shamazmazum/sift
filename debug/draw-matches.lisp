@@ -1,7 +1,7 @@
 (in-package :sift/debug)
 
-(sera:-> draw-matches ((simple-array double-float (* *))
-                       (simple-array double-float (* *))
+(sera:-> draw-matches ((simple-array single-float (* *))
+                       (simple-array single-float (* *))
                        list)
          (values imago:rgb-image &optional))
 (defun draw-matches (array1 array2 matches)

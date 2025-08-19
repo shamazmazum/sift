@@ -1,8 +1,8 @@
 (in-package :sift)
 
-(sera:-> evaluate-neighbor ((simple-array double-float (* * *))
+(sera:-> evaluate-neighbor ((simple-array single-float (* * *))
                             (vec 3))
-         (values double-float double-float &optional))
+         (values single-float single-float &optional))
 (defun evaluate-neighbor (array coord)
   "Return a direction of the gradient and its magnitude at this
 point."
@@ -23,27 +23,27 @@ point."
       (values (atan y x)
               (sqrt (+ (expt x 2) (expt y 2)))))))
 
-(sera:-> %gaussian ((double-float 0d0) double-float double-float)
-         (values double-float &optional))
+(sera:-> %gaussian ((single-float 0f0) single-float single-float)
+         (values single-float &optional))
 (defun %gaussian (σ x y)
   (declare (optimize (speed 3)))
   (/ (exp (- (/ (+ (expt x 2) (expt y 2)) 2 (expt σ 2))))
-     (sqrt (* 2 pi))
+     (sqrt (* 2 +pi+))
      σ))
 
-(sera:-> gaussian ((double-float 0d0) (vec 3))
-         (values double-float &optional))
+(sera:-> gaussian ((single-float 0f0) (vec 3))
+         (values single-float &optional))
 (declaim (inline gaussian))
 (defun gaussian (σ coord)
   (%gaussian σ (aref coord 1) (aref coord 2)))
 
 ;; This function distributes a value between the two closest bins with
 ;; weight between 0 and 1.
-(sera:-> angle->bins (double-float alex:positive-fixnum)
-         (values alex:non-negative-fixnum alex:non-negative-fixnum double-float &optional))
+(sera:-> angle->bins (single-float alex:positive-fixnum)
+         (values alex:non-negative-fixnum alex:non-negative-fixnum single-float &optional))
 (defun angle->bins (x nbins)
   (declare (optimize (speed 3)))
-  (let* ((w   (/ (* 2 pi) nbins))
+  (let* ((w   (/ (* 2 +pi+) nbins))
          (w/2 (/ w 2)))
     (multiple-value-bind (q r)
         (floor (- x w/2) w)
@@ -53,19 +53,19 @@ point."
                 (mod (1+ q) nbins)
                 (- 1 v))))))
 
-(sera:-> orientation-histogram (keypoint (simple-array double-float (* * *)))
-         (values (simple-array double-float (36)) &optional))
+(sera:-> orientation-histogram (keypoint (simple-array single-float (* * *)))
+         (values (simple-array single-float (36)) &optional))
 (defun orientation-histogram (keypoint gaussian)
   (declare (optimize (speed 3)))
   (let* ((σ (* (keypoint-σ keypoint) 1.5))
          (l (1+ (* (the fixnum (ceiling σ)) 4)))
          (w (floor l 2))
          (hist (make-array 36
-                           :element-type 'double-float
-                           :initial-element 0d0)))
+                           :element-type 'single-float
+                           :initial-element 0f0)))
     (declare (type fixnum l))
     (loop-ranges ((i 0 l) (j 0 l))
-     (let* ((diff (make-vec3 0d0 (float (- i w) 0d0) (float (- j w) 0d0)))
+     (let* ((diff (make-vec3 0f0 (float (- i w) 0f0) (float (- j w) 0f0)))
             (coord (add3 diff (keypoint-coord keypoint))))
        (declare (dynamic-extent diff coord))
        (multiple-value-bind (phase magnitude)
@@ -77,15 +77,15 @@ point."
              (incf (aref hist bin2) (* v (- 1 w))))))))
     hist))
 
-(defconstant +ori-bin-width+ (/ (* 2 pi) 36))
-(defconstant +ori-bin-center+ (/ pi 36))
+(defconstant +ori-bin-width+ (/ (* 2 +pi+) 36))
+(defconstant +ori-bin-center+ (/ +pi+ 36))
 
-(sera:-> determine-orientations (keypoint (simple-array double-float (* * *)))
+(sera:-> determine-orientations (keypoint (simple-array single-float (* * *)))
          (values list &optional))
 (defun determine-orientations (keypoint gaussian)
   (declare (optimize (speed 3)))
   (loop with histogram = (orientation-histogram keypoint gaussian)
-        with max double-float = (reduce #'max histogram)
+        with max single-float = (reduce #'max histogram)
         for bin below 36
         for c = (aref histogram bin)
         ;; Access pattern is circular since this is a histogram of
@@ -94,7 +94,7 @@ point."
         for r = (aref histogram (mod (1+ bin) 36))
         ;; When c is a "rough" local extremum in the histogram which
         ;; is big enough...
-        when (and (> c (* max 8d-1))
+        when (and (>  c (* max 8f-1))
                   (>= c l)
                   (>= c r))
         collect

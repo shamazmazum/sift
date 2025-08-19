@@ -1,13 +1,13 @@
 (in-package :sift)
 
-(deftype %descriptor () '(simple-array double-float (128)))
+(deftype %descriptor () '(simple-array single-float (128)))
 
 (declaim (inline flatten-descriptor))
 (defun flatten-descriptor (descr)
   (let ((result (make-array (* 4 4 8)
-                            :element-type 'double-float))
+                            :element-type 'single-float))
         (flat (make-array (* 4 4 8)
-                          :element-type 'double-float
+                          :element-type 'single-float
                           :displaced-to descr
                           :displaced-index-offset 0)))
     (replace result flat)))
@@ -16,7 +16,7 @@
          (values %descriptor &optional))
 (defun normalize-descriptor! (descr)
   (declare (optimize (speed 3)))
-  (let ((norm (sqrt (loop for x across descr sum (expt x 2) double-float))))
+  (let ((norm (sqrt (loop for x across descr sum (expt x 2) single-float))))
     (map-into
      descr
      (lambda (x) (/ x norm))
@@ -31,7 +31,7 @@
     (normalize-descriptor!
      (map-into normalized
                (lambda (x)
-                 (min x 2d-1))
+                 (min x 2f-1))
                normalized))))
 
 (sera:defconstructor descriptor
@@ -47,33 +47,33 @@ which is invariant to linear transformations of the image which produced this sc
 space."
   (declare (optimize (speed 3)))
   (let* ((descriptor (make-array '(4 4 8)
-                                 :element-type 'double-float
-                                 :initial-element 0d0))
+                                 :element-type 'single-float
+                                 :initial-element 0f0))
          (gaussian (nth (keypoint-octave keypoint)
                         (scale-space-octaves scale-space)))
          (angle (keypoint-angle keypoint))
          (cos (cos angle))
          (sin (sin angle))
-         (m (make-mat3 1d0 0d0 0d0
-                       0d0 cos (- sin)
-                       0d0 sin cos))
+         (m (make-mat3 1f0 0f0 0f0
+                       0f0 cos (- sin)
+                       0f0 sin cos))
          (σ (keypoint-σ keypoint))
          (hist-width/2 (* (the fixnum (ceiling σ)) 2))
          (hist-width   (* hist-width/2 2))
          (window-width (* hist-width 4))
-         (shift (- (* hist-width 2) 5d-1)))
+         (shift (- (* hist-width 2) 5f-1)))
     (declare (type fixnum window-width hist-width hist-width/2))
     (flet ((idx->bin (idx)
              (multiple-value-bind (q r)
                  (floor (- idx hist-width/2) hist-width)
-               (let ((v (/ (float r 0d0) hist-width)))
+               (let ((v (/ (float r 0f0) hist-width)))
                  (values q (- (1- v))))))
            (incf-descr! (i j k v)
              (when (and (<= 0 i 3)
                         (<= 0 j 3))
                (incf (aref descriptor i j k) v))))
       (loop-ranges ((i 0 window-width) (j 0 window-width))
-       (let* ((neighbor (make-vec3 0d0 (- i shift) (- j shift)))
+       (let* ((neighbor (make-vec3 0f0 (- i shift) (- j shift)))
               (rotated (mul-m3v3 m neighbor))
               (coord (add3 (keypoint-coord keypoint) rotated)))
          (declare (dynamic-extent neighbor rotated coord))

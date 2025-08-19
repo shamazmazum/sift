@@ -18,8 +18,8 @@
     :initial-value body
     :from-end t)))
 
-(sera:-> interpolate (scalar-field double-float double-float double-float)
-         (values double-float &optional))
+(sera:-> interpolate (scalar-field single-float single-float single-float)
+         (values single-float &optional))
 (declaim (inline interpolate))
 (defun interpolate (f x y z)
   (bind-coords ((qx rx x)

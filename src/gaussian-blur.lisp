@@ -1,11 +1,11 @@
 (in-package :sift)
 
-(sera:-> gaussian-kernel-1d ((double-float (0d0)))
-         (values (simple-array double-float (*)) &optional))
+(sera:-> gaussian-kernel-1d ((single-float (0f0)))
+         (values (simple-array single-float (*)) &optional))
 (defun gaussian-kernel-1d (σ)
   (loop with length = (1+ (* (ceiling σ) 4))
         with w = (floor length 2)
-        with kernel = (make-array length :element-type 'double-float)
+        with kernel = (make-array length :element-type 'single-float)
         for i below length
         for x = (- i w)
         for v = (exp (- (/ (expt x 2) (expt σ 2) 2)))
@@ -15,27 +15,27 @@
         (map-into kernel (lambda (x) (/ x sum)) kernel)
         (return kernel)))
 
-(sera:-> gaussian-kernel ((double-float (0d0)))
-         (values (simple-array double-float (* *)) &optional))
+(sera:-> gaussian-kernel ((single-float (0f0)))
+         (values (simple-array single-float (* *)) &optional))
 (defun gaussian-kernel (σ)
   (let* ((kernel-1d (gaussian-kernel-1d σ))
          (length (length kernel-1d))
          (kernel (make-array (list length length)
-                             :element-type 'double-float)))
+                             :element-type 'single-float)))
     (loop-array (kernel (i j))
      (setf (aref kernel i j)
            (* (aref kernel-1d i)
               (aref kernel-1d j))))
     kernel))
 
-(sera:-> gaussian-kernel-padded ((double-float (0d0))
+(sera:-> gaussian-kernel-padded ((single-float (0f0))
                                  alex:positive-fixnum
                                  alex:positive-fixnum)
-         (values (simple-array double-float (* *)) &optional))
+         (values (simple-array single-float (* *)) &optional))
 (defun gaussian-kernel-padded (σ h w)
   (let* ((kernel (make-array (list h w)
-                             :element-type 'double-float
-                             :initial-element 0d0))
+                             :element-type 'single-float
+                             :initial-element 0f0))
          (kernel-tight (gaussian-kernel σ))
          (size (array-dimension kernel-tight 0))
          (width (floor size 2)))
@@ -47,8 +47,8 @@
               (aref kernel-tight i j))))
     kernel))
 
-(sera:-> normalize! ((simple-array double-float (* *)))
-         (values (simple-array double-float (* *)) &optional))
+(sera:-> normalize! ((simple-array single-float (* *)))
+         (values (simple-array single-float (* *)) &optional))
 (defun normalize! (array)
   (declare (optimize (speed 3)))
   (let ((size (array-total-size array)))
@@ -57,19 +57,19 @@
                 (/ (row-major-aref array i) size))))
   array)
 
-(sera:-> gaussian-blur ((simple-array double-float (* *))
-                        (double-float (0d0)))
-         (values (simple-array double-float (* *)) &optional))
+(sera:-> gaussian-blur ((simple-array single-float (* *))
+                        (single-float (0f0)))
+         (values (simple-array single-float (* *)) &optional))
 (defun gaussian-blur (array σ)
   (declare (optimize (speed 3)))
   (let* ((dimensions (array-dimensions array))
          (kernel (gaussian-kernel-padded
                   σ (array-dimension array 0) (array-dimension array 1))))
     (normalize!
-     (cl-fftw/double:%irfft
-      (cl-fftw/double:with-plan (plan cl-fftw/double:create-rfft-plan dimensions)
-        (let ((array-fft  (cl-fftw/double:rfft plan array))
-              (kernel-fft (cl-fftw/double:rfft plan kernel)))
+     (cl-fftw/single:%irfft
+      (cl-fftw/single:with-plan (plan cl-fftw/single:create-rfft-plan dimensions)
+        (let ((array-fft  (cl-fftw/single:rfft plan array))
+              (kernel-fft (cl-fftw/single:rfft plan kernel)))
           (loop for i below (array-total-size array-fft) do
                 (setf (row-major-aref array-fft i)
                       (* (row-major-aref array-fft  i)

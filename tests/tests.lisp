@@ -1,6 +1,7 @@
 (in-package :sift/tests)
 
 (defparameter *number-of-runs* 50)
+(defconstant +pi+ (float pi 0.0))
 
 (defun run-tests ()
   (every #'identity
@@ -11,7 +12,7 @@
                  '(linalg3 linalg2 interp descr regis))))
 
 (defun approx-= (x y)
-  (< (abs (- x y)) 1d-8))
+  (< (abs (- x y)) 1f-6))
 
 (defun mat-approx-= (m1 m2)
   (every
@@ -21,32 +22,32 @@
 
 (defun mat3-rand ()
   (sift:make-mat3
-   (random 1d0)
-   (random 1d0)
-   (random 1d0)
-   (random 1d0)
-   (random 1d0)
-   (random 1d0)
-   (random 1d0)
-   (random 1d0)
-   (random 1d0)))
+   (random 1f0)
+   (random 1f0)
+   (random 1f0)
+   (random 1f0)
+   (random 1f0)
+   (random 1f0)
+   (random 1f0)
+   (random 1f0)
+   (random 1f0)))
 
 (defun mat2-rand ()
   (sift:make-mat2
-   (random 1d0)
-   (random 1d0)
-   (random 1d0)
-   (random 1d0)))
+   (random 1f0)
+   (random 1f0)
+   (random 1f0)
+   (random 1f0)))
 
 (defun unitary3-rand ()
-  (let* ((ϕ (random (* 2 pi)))
-         (ψ (random (* 2 pi)))
-         (m1 (sift:make-mat3 (cos ϕ) (- (sin ϕ)) 0d0 (sin ϕ) (cos ϕ) 0d0 0d0 0d0 1d0))
-         (m2 (sift:make-mat3 (cos ψ) 0d0 (- (sin ψ)) 0d0 1d0 0d0 (sin ψ) 0d0 (cos ψ))))
+  (let* ((ϕ (random (* 2 +pi+)))
+         (ψ (random (* 2 +pi+)))
+         (m1 (sift:make-mat3 (cos ϕ) (- (sin ϕ)) 0f0 (sin ϕ) (cos ϕ) 0f0 0f0 0f0 1f0))
+         (m2 (sift:make-mat3 (cos ψ) 0f0 (- (sin ψ)) 0f0 1f0 0f0 (sin ψ) 0f0 (cos ψ))))
     (sift:mul3 m1 m2)))
 
 (defun unitary2-rand ()
-  (let ((ϕ (random (* 2 pi))))
+  (let ((ϕ (random (* 2 +pi+))))
     (sift:make-mat2 (cos ϕ) (- (sin ϕ)) (sin ϕ) (cos ϕ))))
 
 (defun linear-function (x y z)
@@ -54,9 +55,9 @@
 
 (defun %linear-function (index)
   (linear-function
-   (float (sift:index3-i index) 0d0)
-   (float (sift:index3-j index) 0d0)
-   (float (sift:index3-k index) 0d0)))
+   (float (sift:index3-i index) 0f0)
+   (float (sift:index3-j index) 0f0)
+   (float (sift:index3-k index) 0f0)))
 
 ;; Neumann, Rodrigo, ANDREETA, MARIANE, Lucas-Oliveira, Everton. "11
 ;; Sandstones: raw, filtered and segmented data." Digital Rocks
@@ -145,9 +146,9 @@
 
 (test interp
   (loop repeat 100
-        for x = (random 10d0)
-        for y = (random 10d0)
-        for z = (random 10d0) do
+        for x = (random 10f0)
+        for y = (random 10f0)
+        for z = (random 10f0) do
         (is (approx-= (linear-function x y z)
                       (sift:interpolate #'%linear-function x y z)))))
 
@@ -165,7 +166,7 @@
   (loop repeat *number-of-runs*
         for slice = (select:select *slices* (random (array-dimension *slices* 0))
                                    (select:range 0 1000) (select:range 0 1000))
-        for s = (1+ (random 2d0))
+        for s = (1+ (random 2f0))
         for slice2 = (sift/debug:scale-array slice s s)
         for m = (sift/debug:scale-transform s) sum
         (test-matches slice slice2 m)))
@@ -174,7 +175,7 @@
   (loop repeat *number-of-runs*
         for slice = (select:select *slices* (random (array-dimension *slices* 0))
                                    (select:range 0 1000) (select:range 0 1000))
-        for ϕ = (random (/ pi 2))
+        for ϕ = (random (/ +pi+ 2))
         for slice2 = (sift/debug:rotate-array slice ϕ)
         for m = (sift/debug:rotation-transform 1000 ϕ) sum
         (test-matches slice slice2 m)))
@@ -183,8 +184,8 @@
   (loop repeat *number-of-runs*
         for slice = (select:select *slices* (random (array-dimension *slices* 0))
                                    (select:range 0 1000) (select:range 0 1000))
-        for s = (1+ (random 2d0))
-        for ϕ = (random (/ pi 2))
+        for s = (1+ (random 2f0))
+        for ϕ = (random (/ +pi+ 2))
         for slice2 = (sift/debug:rotate-array (sift/debug:scale-array slice s s) ϕ)
         for m1 = (sift/debug:scale-transform s)
         for m2 = (sift/debug:rotation-transform (* s 1000) ϕ)
@@ -195,15 +196,15 @@
 
 (test ransac
   (loop repeat 500
-        for xs1 = (magicl:scale (magicl:rand '(1000 3)) 100)
-        for m  = (magicl:rand '(3 3))
+        for xs1 = (magicl:scale (magicl:rand '(1000 3) :type 'single-float) 100)
+        for m  = (magicl:rand '(3 3) :type 'single-float)
         for ys1 = (magicl:@ xs1 m)
-        for xs2 = (magicl:scale (magicl:rand '(20 3)) 10000)
-        for ys2 = (magicl:scale (magicl:rand '(20 3)) 10000)
+        for xs2 = (magicl:scale (magicl:rand '(20 3) :type 'single-float) 10000)
+        for ys2 = (magicl:scale (magicl:rand '(20 3) :type 'single-float) 10000)
         for xs = (magicl:vstack (list xs1 xs2))
         for ys = (magicl:vstack (list ys1 ys2))
-        for fit = (sift/registration:ransac-fit xs ys 30 10 50 1d0) do
+        for fit = (sift/registration:ransac-fit xs ys 30 10 50 1f0) do
         (is-true (magicl:every
                   (lambda (x y)
-                    (< (- x y) 1d-4))
+                    (< (- x y) 1f-4))
                   m fit))))

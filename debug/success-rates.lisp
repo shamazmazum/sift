@@ -8,8 +8,8 @@
         (mod (sift:index3-j index) (array-dimension array 0))
         (mod (sift:index3-k index) (array-dimension array 1))))
 
-(sera:-> rotate-array ((simple-array double-float (* *)) double-float)
-         (values (simple-array double-float (* *)) &optional))
+(sera:-> rotate-array ((simple-array single-float (* *)) single-float)
+         (values (simple-array single-float (* *)) &optional))
 (defun rotate-array (array ϕ)
   (declare (optimize (speed 3)))
   (assert (= (array-dimension array 0)
@@ -22,7 +22,7 @@
          (b (* (/ side 2) (- (1- (* c (+ sin cos))))))
          (new-side (floor (* side c)))
          (result (make-array (list new-side new-side)
-                             :element-type 'double-float)))
+                             :element-type 'single-float)))
     (sift:loop-array (result (i j))
       (let ((x (+ (* cos i) (- (* sin j)) a))
             (y (+ (* sin i) (+ (* cos j)) b)))
@@ -32,89 +32,89 @@
                   (sift:interpolate
                    (lambda (idx)
                      (myaref array idx))
-                   0d0 x y)
-                  0d0))))
+                   0f0 x y)
+                  0f0))))
   result))
 
-(sera:-> scale-array ((simple-array double-float (* *))
-                      (double-float 0d0)
-                      (double-float 0d0))
-         (values (simple-array double-float (* *)) &optional))
+(sera:-> scale-array ((simple-array single-float (* *))
+                      (single-float 0f0)
+                      (single-float 0f0))
+         (values (simple-array single-float (* *)) &optional))
 (defun scale-array (array s1 s2)
   (declare (optimize (speed 3)))
   (let* ((h (array-dimension array 0))
          (w (array-dimension array 1))
          (result (make-array (list (floor (* s1 h))
                                    (floor (* s2 w)))
-                             :element-type 'double-float)))
+                             :element-type 'single-float)))
     (sift:loop-array (result (i j))
       (let ((x (/ i s1))
             (y (/ j s2)))
         (flet ((get-data (idx)
                  (myaref array idx)))
           (setf (aref result i j)
-                (sift:interpolate #'get-data 0d0 x y)))))
+                (sift:interpolate #'get-data 0f0 x y)))))
     result))
 
-(sera:-> add-noise ((simple-array double-float (* *)))
-         (values (simple-array double-float (* *)) &optional))
+(sera:-> add-noise ((simple-array single-float (* *)))
+         (values (simple-array single-float (* *)) &optional))
 (defun add-noise (array)
   (declare (optimize (speed 3)))
   (let ((result (make-array (array-dimensions array)
-                            :element-type 'double-float)))
+                            :element-type 'single-float)))
     (sift:loop-array (result (i j))
       (setf (aref result i j)
-            (clamp (+ (aref array i j) (random 5d-2)) 0 1)))
+            (clamp (+ (aref array i j) (random 5f-2)) 0 1)))
     result))
 
 (defun rotation-transform (s ϕ)
   (let* ((cos (cos ϕ))
          (sin (sin ϕ))
-         (2/s (/ 2d0 s))
-         (s/2 (/ s 2d0))
+         (2/s (/ 2f0 s))
+         (s/2 (/ s 2f0))
          (cs/2 (* s/2 (+ cos sin)))
-         (a (sift:make-mat3 2/s 0d0 -1d0
-                            0d0 2/s -1d0
-                            0d0 0d0 1d0))
-         (b (sift:make-mat3 cos sin 0d0
-                            (- sin) cos 0d0
-                            0d0 0d0 1d0))
-         (c (sift:make-mat3 s/2 0d0 cs/2
-                            0d0 s/2 cs/2
-                            0d0 0d0 1d0)))
+         (a (sift:make-mat3 2/s 0f0 -1f0
+                            0f0 2/s -1f0
+                            0f0 0f0 1f0))
+         (b (sift:make-mat3 cos sin 0f0
+                            (- sin) cos 0f0
+                            0f0 0f0 1f0))
+         (c (sift:make-mat3 s/2 0f0 cs/2
+                            0f0 s/2 cs/2
+                            0f0 0f0 1f0)))
     (sift:mul3 c (sift:mul3 b a))))
 
 (defun scale-transform (s)
-  (sift:make-mat3  s  0d0 0d0
-                   0d0  s  0d0
-                   0d0 0d0 1d0))
+  (sift:make-mat3  s  0f0 0f0
+                   0f0  s  0f0
+                   0f0 0f0 1f0))
 
-(defun success-rates (data1 data2 m &key (spatial-error 4d0))
+(defun success-rates (data1 data2 m &key (spatial-error 4f0))
   (let* ((kp1 (sift:descriptors (sift:gaussian-scale-space data1)))
          (kp2 (sift:descriptors (sift:gaussian-scale-space data2)))
          (matches (sift:find-matches kp1 kp2))
          (correct 0))
     (loop for (kp1 . kp2) in matches
           for kp-coord = (multiple-value-call #'sift:make-vec3
-                           (sift:image-coordinate kp1) 1d0)
+                           (sift:image-coordinate kp1) 1f0)
           for expected-coord = (sift:mul-m3v3 m kp-coord)
           for match-coord = (multiple-value-call #'sift:make-vec3
-                              (sift:image-coordinate kp2) 1d0)
+                              (sift:image-coordinate kp2) 1f0)
           ;; This match is close enough to the expected position
           when (< (sift:dist3 expected-coord match-coord) spatial-error) do
           (incf correct))
     (cons correct (length matches))))
 
 (defun success-rates-scaling (data)
-  (loop for s from 1d0 to 2d0 by 1d-2
+  (loop for s from 1f0 to 2f0 by 1f-2
         for trans = (scale-array data s s)
         for m = (scale-transform s)
         do (format t "Current scale level: ~f~%" s)
         collect (cons s (success-rates data trans m))))
 
 (defun success-rates-rotation (data)
-  (loop for ϕ from 0d0 to (/ pi 2) by 1d-2
+  (loop for ϕ from 0f0 to (/ pi 2) by 1f-2
         for trans = (rotate-array data ϕ)
-        for m = (rotation-transform (float (array-dimension data 0) 0d0) ϕ)
+        for m = (rotation-transform (float (array-dimension data 0) 0f0) ϕ)
         do (format t "Current rotation angle: ~f~%" ϕ)
         collect (cons ϕ (success-rates data trans m))))

@@ -1,12 +1,15 @@
 (in-package :sift)
 
+(eval-when (:compile-toplevel :load-toplevel :execute)
+  (defconstant +pi+ (float pi 0f0)))
+
 (sera:defconstructor keypoint
   "A structure which describes a keypoint in an image."
   (coord  (vec 3))
   (index  index3)
   (octave alex:non-negative-fixnum)
-  (σ      (double-float (0d0)))
-  (angle  (double-float 0d0 (#.(* 2 pi)))))
+  (σ      (single-float (0f0)))
+  (angle  (single-float 0f0 (#.(* 2 +pi+)))))
 
 (picolens:gen-lenses keypoint
   (keypoint-coord  kp-coord)
@@ -24,14 +27,14 @@
                    (add3 x diff))
                  keypoint))
 
-(sera:-> new-angle (keypoint (double-float 0d0 (#.(* 2 pi))))
+(sera:-> new-angle (keypoint (single-float 0f0 (#.(* 2 +pi+))))
          (values keypoint &optional))
 (declaim (inline new-angle))
 (defun new-angle (keypoint angle)
   (picolens:set #'kp-angle angle keypoint))
 
 (sera:-> image-coordinate (keypoint)
-         (values double-float double-float &optional))
+         (values single-float single-float &optional))
 (defun image-coordinate (keypoint)
   "Return coordinates of a keypoint in a coordinate system of the
 image (scale level 0)."
@@ -48,4 +51,4 @@ image (scale level 0) as an augmented vector (3-component vector with
 the last element being equal to 1)."
   (multiple-value-bind (x y)
       (image-coordinate keypoint)
-    (make-vec3 x y 1d0)))
+    (make-vec3 x y 1f0)))

@@ -4,12 +4,12 @@
 ;; where the first matrix corresponds to the first keypoint in a pair
 ;; and the second matrix corresponds to the second keypoint in a pair.
 (sera:-> matches->matrices (list)
-         (values magicl:matrix/double-float magicl:matrix/double-float &optional))
+         (values magicl:matrix/single-float magicl:matrix/single-float &optional))
 (defun matches->matrices (matches)
   (flet ((coord-list (kp)
            (multiple-value-bind (x y)
                (sift:image-coordinate kp)
-             (list x y 1d0))))
+             (list x y 1f0))))
     (multiple-value-bind (xs ys n)
         (loop for (kp1 . kp2) in matches
               append (coord-list kp1) into xs
@@ -21,8 +21,8 @@
        (magicl:from-list ys (list n 3))))))
 
 ;; Return a matrix βs so that ys ≈ xs * βs using least squares.
-(sera:-> least-squares-fit (magicl:matrix/double-float magicl:matrix/double-float)
-         (values magicl:matrix/double-float &optional))
+(sera:-> least-squares-fit (magicl:matrix/single-float magicl:matrix/single-float)
+         (values magicl:matrix/single-float &optional))
 (defun least-squares-fit (xs ys)
   (magicl:mult
    (magicl:mult
@@ -30,10 +30,10 @@
     xs :transb :t)
    ys))
 
-(sera:-> fit-error (magicl:matrix/double-float
-                    magicl:matrix/double-float
-                    magicl:matrix/double-float)
-         (values double-float &optional))
+(sera:-> fit-error (magicl:matrix/single-float
+                    magicl:matrix/single-float
+                    magicl:matrix/single-float)
+         (values single-float &optional))
 (defun fit-error (βs xs ys)
   (let ((diff (magicl:.- ys (magicl:@ xs βs))))
     (flet ((norm (column)
@@ -53,8 +53,8 @@ without repetitions."
                        (%go (cons x acc) (1- k)))))))
     (%go nil k)))
 
-(sera:-> select-rows (magicl:matrix/double-float list)
-         (values magicl:matrix/double-float &optional))
+(sera:-> select-rows (magicl:matrix/single-float list)
+         (values magicl:matrix/single-float &optional))
 (defun select-rows (m is)
   (magicl:vstack
    (mapcar
@@ -67,12 +67,12 @@ without repetitions."
 ;; https://en.wikipedia.org/wiki/Random_sample_consensus
 ;; K — number of points for initial fit
 ;; D — number of points needed to be fit with the model to treat the model as good.
-(sera:-> ransac-iteration (magicl:matrix/double-float
-                           magicl:matrix/double-float
+(sera:-> ransac-iteration (magicl:matrix/single-float
+                           magicl:matrix/single-float
                            alex:positive-fixnum
                            alex:positive-fixnum
-                           (double-float 0d0))
-         (values boolean &optional magicl:matrix/double-float double-float))
+                           (single-float 0f0))
+         (values boolean &optional magicl:matrix/single-float single-float))
 (defun ransac-iteration (xs ys k d err)
   (let* ((length (first (magicl:shape xs)))
          (is (random-integers k length))
@@ -97,13 +97,13 @@ without repetitions."
         (let ((βs (least-squares-fit xs ys)))
           (values t βs (fit-error βs xs ys)))))))
 
-(sera:-> ransac-fit (magicl:matrix/double-float
-                     magicl:matrix/double-float
+(sera:-> ransac-fit (magicl:matrix/single-float
+                     magicl:matrix/single-float
                      alex:positive-fixnum
                      alex:positive-fixnum
                      alex:positive-fixnum
-                     (double-float 0d0))
-         (values (or magicl:matrix/double-float null) &optional))
+                     (single-float 0f0))
+         (values (or magicl:matrix/single-float null) &optional))
 (defun ransac-fit (xs ys n k d err)
   (labels ((%go (best-fit best-err n)
              (if (zerop n) best-fit
@@ -112,12 +112,12 @@ without repetitions."
                    (if (and successp (< err best-err))
                        (%go fit err (1- n))
                        (%go best-fit best-err (1- n)))))))
-    (%go nil ff:double-float-positive-infinity n)))
+    (%go nil ff:single-float-positive-infinity n)))
 
-(sera:-> matrix->array (magicl:matrix/double-float)
+(sera:-> matrix->array (magicl:matrix/single-float)
          (values (sift:mat 3) &optional))
 (defun matrix->array (m)
-  (let ((res (make-array '(3 3) :element-type 'double-float)))
+  (let ((res (make-array '(3 3) :element-type 'single-float)))
     (loop for i below 3 do
           (loop for j below 3 do
                 (setf (aref res i j)
@@ -128,9 +128,9 @@ without repetitions."
                                 (:max-iter    alex:positive-fixnum)
                                 (:seed-points alex:positive-fixnum)
                                 (:well-fit    alex:positive-fixnum)
-                                (:err         (double-float 0d0)))
+                                (:err         (single-float 0f0)))
          (values (or (sift:mat 3) null) &optional))
-(defun affine-transform (matches &key (max-iter 10) (seed-points 10) (well-fit 50) (err 1d0))
+(defun affine-transform (matches &key (max-iter 10) (seed-points 10) (well-fit 50) (err 1f0))
   "Find an affine transform matrix which transform the first keypoint
 in each pair of matches to the second keypoint. Keypoint parameters
 are related to the RANSAC algorithm: @c(MAX-ITER) is the maximal

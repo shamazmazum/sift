@@ -1,14 +1,14 @@
 (in-package :sift/debug)
 
 (sera:-> load-image ((or string pathname))
-         (values (simple-array double-float (* *)) &optional))
+         (values (simple-array single-float (* *)) &optional))
 (defun load-image (name)
   (let ((pixels (imago:image-pixels (imago:read-image name))))
-    (aops:vectorize* 'double-float
+    (aops:vectorize* 'single-float
         (pixels)
-      (/ (imago:color-intensity pixels) 255d0))))
+      (/ (imago:color-intensity pixels) 255f0))))
 
-(sera:-> write-image ((simple-array double-float (* *)) (or string pathname))
+(sera:-> write-image ((simple-array single-float (* *)) (or string pathname))
          (values &optional))
 (defun write-image (data name)
   (let ((pixels (aops:vectorize* 'imago:grayscale-pixel
