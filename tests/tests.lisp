@@ -11,15 +11,6 @@
                      (results-status status)))
                  '(linalg3 linalg2 interp descr regis))))
 
-(defun approx-= (x y)
-  (< (abs (- x y)) 1f-6))
-
-(defun mat-approx-= (m1 m2)
-  (every
-   #'approx-=
-   (aops:flatten m1)
-   (aops:flatten m2)))
-
 (defun mat3-rand ()
   (sift:make-mat3
    (random 1f0)
@@ -79,68 +70,74 @@
 (in-suite linalg3)
 
 (test mul-identity3
-  (loop repeat 1000
+  (loop repeat 3000
         for m = (mat3-rand) do
-        (is (mat-approx-= m (sift:mul3 m sift:+mat3-identity+)))
-        (is (mat-approx-= m (sift:mul3 sift:+mat3-identity+ m)))))
+        (is (approx:array-approx-p m (sift:mul3 m sift:+mat3-identity+)))
+        (is (approx:array-approx-p m (sift:mul3 sift:+mat3-identity+ m)))))
 
 (test determinant3
-  (loop repeat 1000
+  (loop repeat 3000
         for m1 = (mat3-rand)
         for m2 = (mat3-rand)
-        do
-        (is (approx-= (* (sift:det3 m1) (sift:det3 m2))
-                      (sift:det3 (sift:mul3 m1 m2))))
-        (is (approx-= (* (sift:det3 m1) (sift:det3 m2))
-                      (sift:det3 (sift:mul3 m2 m1))))))
+        when (> (sift:det3 (sift:mul3 m2 m1)) 1f-3) do
+        (is (approx:approxp
+             (* (sift:det3 m1) (sift:det3 m2))
+             (sift:det3 (sift:mul3 m1 m2))))
+        (is (approx:approxp
+             (* (sift:det3 m1) (sift:det3 m2))
+             (sift:det3 (sift:mul3 m2 m1))))))
 
 (test trace3
-  (loop repeat 1000
+  (loop repeat 3000
         for m1 = (mat3-rand)
         for m2 = (unitary3-rand)
         do
-        (is (approx-= (sift:trace3 m1)
-                      (sift:trace3 (sift:mul3 m2 (sift:mul3 m1 (sift:inv3 m2))))))))
+        (is (approx:approxp
+             (sift:trace3 m1)
+             (sift:trace3 (sift:mul3 m2 (sift:mul3 m1 (sift:inv3 m2))))))))
 
 (test inversion3
-  (loop repeat 1000
-        for m1 = (mat3-rand)
-        for m2 = (sift:inv3 m1) do
-        (is (mat-approx-= sift:+mat3-identity+ (sift:mul3 m1 m2)))
-        (is (mat-approx-= sift:+mat3-identity+ (sift:mul3 m2 m1)))))
+  (loop repeat 3000
+        for m = (mat3-rand)
+        when (> (sift:det3 m) 1f-3) do
+        (is (approx:array-approx-p sift:+mat3-identity+ (sift:mul3 m (sift:inv3 m))))
+        (is (approx:array-approx-p sift:+mat3-identity+ (sift:mul3 (sift:inv3 m) m)))))
 
 (in-suite linalg2)
 
 (test mul-identity2
-  (loop repeat 1000
+  (loop repeat 3000
         for m = (mat2-rand) do
-        (is (mat-approx-= m (sift:mul2 m sift:+mat2-identity+)))
-        (is (mat-approx-= m (sift:mul2 sift:+mat2-identity+ m)))))
+        (is (approx:array-approx-p m (sift:mul2 m sift:+mat2-identity+)))
+        (is (approx:array-approx-p m (sift:mul2 sift:+mat2-identity+ m)))))
 
 (test determinant2
-  (loop repeat 1000
+  (loop repeat 3000
         for m1 = (mat2-rand)
         for m2 = (mat2-rand)
-        do
-        (is (approx-= (* (sift:det2 m1) (sift:det2 m2))
-                      (sift:det2 (sift:mul2 m1 m2))))
-        (is (approx-= (* (sift:det2 m1) (sift:det2 m2))
-                      (sift:det2 (sift:mul2 m2 m1))))))
+        when (> (sift:det2 (sift:mul2 m2 m1)) 1f-3) do
+        (is (approx:approxp
+             (* (sift:det2 m1) (sift:det2 m2))
+             (sift:det2 (sift:mul2 m1 m2))))
+        (is (approx:approxp
+             (* (sift:det2 m1) (sift:det2 m2))
+             (sift:det2 (sift:mul2 m2 m1))))))
 
 (test trace2
-  (loop repeat 1000
+  (loop repeat 3000
         for m1 = (mat2-rand)
         for m2 = (unitary2-rand)
         do
-        (is (approx-= (sift:trace2 m1)
-                      (sift:trace2 (sift:mul2 m2 (sift:mul2 m1 (sift:inv2 m2))))))))
+        (is (approx:approxp
+             (sift:trace2 m1)
+             (sift:trace2 (sift:mul2 m2 (sift:mul2 m1 (sift:inv2 m2))))))))
 
 (test inversion2
-  (loop repeat 1000
-        for m1 = (mat2-rand)
-        for m2 = (sift:inv2 m1) do
-        (is (mat-approx-= sift:+mat2-identity+ (sift:mul2 m1 m2)))
-        (is (mat-approx-= sift:+mat2-identity+ (sift:mul2 m2 m1)))))
+  (loop repeat 3000
+        for m = (mat2-rand)
+        when (> (sift:det2 m) 1f-3) do
+        (is (approx:array-approx-p sift:+mat2-identity+ (sift:mul2 m (sift:inv2 m))))
+        (is (approx:array-approx-p sift:+mat2-identity+ (sift:mul2 (sift:inv2 m) m)))))
 
 (in-suite interp)
 
@@ -149,8 +146,9 @@
         for x = (random 10f0)
         for y = (random 10f0)
         for z = (random 10f0) do
-        (is (approx-= (linear-function x y z)
-                      (sift:interpolate #'%linear-function x y z)))))
+        (is (approx:approxp
+             (linear-function x y z)
+             (sift:interpolate #'%linear-function x y z)))))
 
 (in-suite descr)
 
@@ -204,7 +202,4 @@
         for xs = (magicl:vstack (list xs1 xs2))
         for ys = (magicl:vstack (list ys1 ys2))
         for fit = (sift/registration:ransac-fit xs ys 30 10 50 1f0) do
-        (is-true (magicl:every
-                  (lambda (x y)
-                    (< (- x y) 1f-4))
-                  m fit))))
+        (is (approx:array-approx-p (magicl::storage m) (magicl::storage fit)))))

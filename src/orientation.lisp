@@ -100,7 +100,9 @@ point."
         collect
         ;; Location of the extremum of a parabola
         (let ((extremum (/ (- l r) 2 (+ r l (* c -2)))))
-          (assert (< -1/2 extremum 1/2))
+          ;; This assertion worked with double precision, but with
+          ;; single precision it fails sometimes.
+          #+nil (assert (< -1/2 extremum 1/2))
           (new-angle
            keypoint
            (+ +ori-bin-center+

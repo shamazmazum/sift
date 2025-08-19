@@ -75,5 +75,5 @@
   :depends-on (:sift/all
                :select
                :fiveam
-               :array-operations
-               :numpy-npy))
+               :numpy-npy
+               :approx))
