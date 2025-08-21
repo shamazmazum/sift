@@ -5,6 +5,8 @@
                        list)
          (values imago:rgb-image &optional))
 (defun draw-matches (array1 array2 matches)
+  "Make an imago image of two arrays shown side by side + matched
+keypoints + lines connecting keypoints in a match."
   (let* ((image1 (draw-keypoints array1 (mapcar #'car matches)))
          (image2 (draw-keypoints array2 (mapcar #'cdr matches)))
          (width (+ (imago:image-width image1)

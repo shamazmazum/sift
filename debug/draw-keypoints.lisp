@@ -13,6 +13,9 @@
 (sera:-> draw-keypoints ((simple-array single-float (* *)) list)
          (values imago:rgb-image &optional))
 (defun draw-keypoints (array keypoints)
+  "Make an imago image of an array with keypoints drawn as circles
+with an orientation mark. Size of a circle corresponds to a keypoint's
+octave number."
   (let ((image
          (imago:make-rgb-image-from-pixels
           (aops:vectorize* 'imago:rgb-pixel

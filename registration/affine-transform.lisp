@@ -135,9 +135,9 @@ without repetitions."
 in each pair of matches to the second keypoint. Keypoint parameters
 are related to the RANSAC algorithm: @c(MAX-ITER) is the maximal
 number of iterations, @c(SEED-POINTS) is an initial number of points
-to make a fit, @C(WELL-FIT) is a number of well fit points needed to
-treat a fit as successful. A point is well-fit if \\(\\| y - \\beta x
-\\|\\) is less than @c(ERR)."
+to make a fit, @c(WELL-FIT) is a number of well fit points needed to
+treat a fit as successful. A point is well-fit if \\(\\| y - Ax \\|\\)
+is less than @c(ERR), (\\(A\\) is a candidate for the found fit)."
   (let ((m (multiple-value-bind (xs ys)
                (matches->matrices matches)
              (ransac-fit xs ys max-iter seed-points well-fit err))))

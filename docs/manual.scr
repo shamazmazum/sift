@@ -4,31 +4,48 @@
    used for image features describing. The resulting descriptors are scale and
    rotation invariant and insensitive to noise.
 
-   An example:
-   @begin[lang=lisp](code)
+   @begin(section)
+      @title(An example)
+      @begin[lang=lisp](code)
 (let* ((data1 (sift/debug:load-image "img.png"))
        ;; Scale and rotate the image
-       (data2 (sift/debug:rotate-array (sift/debug:scale-array *foo* 1.4d0 1.4d0) 3d-1))
+       (data2 (sift/debug:rotate-array (sift/debug:scale-array data1 1.4 1.4) 3f-1))
        ;; Calculate keypoints and descriptors
-       (kp1 (sift:descriptors (sift:gaussian-scale-space data1)))
-       (kp2 (sift:descriptors (sift:gaussian-scale-space data2)))
+       (kp1 (sift/core:descriptors (sift/core:gaussian-scale-space data1)))
+       (kp2 (sift/core:descriptors (sift/core:gaussian-scale-space data2)))
        ;; Find matches
-       (matches (sift:find-matches kp1 kp2)))
+       (matches (sift/core:find-matches kp1 kp2)))
   ;; Draw matches using imago
   (sift/debug:draw-matches data1 data2 matches))
-   @end(code)
+      @end(code)
+      @image[src="matches.png"]()
+   @end(section)
 
-   @image[src="matches.png"]()
+   @begin(section)
+      @title(Dependencies)
+      The system @c(sift) depends on a few C libraries. You need these:
+      @begin(list)
+         @item(fftw3f (FFTW for single precision floats).)
+         @item(BLAS (libblas.so))
+         @item(LAPACK (liblapack.so))
+         @item(A C compiler (cc))
+      @end(list)
+      If you do not want image registration stuff and need pure SIFT
+      descriptors, you may load @c(sift/core) instead of @c(sift) which does not
+      require BLAS and LAPACK.
+   @end(section)
 
-   Citation of the original algo:
-   Lowe, D.G. Distinctive Image Features from Scale-Invariant
-   Keypoints. International Journal of Computer Vision 60, 91–110
-   (2004). https://doi.org/10.1023/B:VISI.0000029664.99615.94
+   @begin(section)
+      @title(Citation)
+      Lowe, D.G. Distinctive Image Features from Scale-Invariant
+      Keypoints. International Journal of Computer Vision 60, 91–110
+      (2004). https://doi.org/10.1023/B:VISI.0000029664.99615.94
+   @end(section)
 @end(section)
 
 @begin(section)
    @title(How-to)
-   First of all, convert your image to a two-dimensional array of double floats
+   First of all, convert your image to a two-dimensional array of single floats
    where elements vary from zero to one. Than convert the array to a Gaussian
    scale space representation using @c(gaussian-scale-space). I recommend
    leaving keyword parameters as is. Read the original paper if you want to know
@@ -40,16 +57,33 @@
 
 @begin(section)
    @title(API)
-
-   @cl:with-package[name="sift"](
-     @cl:doc(function gaussian-scale-space)
-     @cl:doc(function keypoints)
-     @cl:doc(function descriptors)
-     @cl:doc(function describe-point)
-     @cl:doc(function find-matches)
-     @cl:doc(defconstructor keypoint)
-     @cl:doc(defconstructor descriptor)
-     @cl:doc(function image-coordinate)
-     @cl:doc(function image-coordinate-vector)
-   )
+   @begin(section)
+      @title(Package @c(sift/core))
+      @cl:with-package[name="sift/core"](
+         @cl:doc(function gaussian-scale-space)
+         @cl:doc(function keypoints)
+         @cl:doc(function descriptors)
+         @cl:doc(function describe-point)
+         @cl:doc(function find-matches)
+         @cl:doc(defconstructor keypoint)
+         @cl:doc(defconstructor descriptor)
+         @cl:doc(function image-coordinate)
+         @cl:doc(function image-coordinate-vector)
+      )
+   @end(section)
+   @begin(section)
+      @title(Package @c(sift/debug))
+      @cl:with-package[name="sift/debug"](
+         @cl:doc(function draw-keypoints)
+         @cl:doc(function draw-matches)
+         @cl:doc(function load-image)
+         @cl:doc(function write-image)         
+      )
+   @end(section)
+   @begin(section)
+      @title(Package @c(sift/registration))
+      @cl:with-package[name="sift/registration"](
+         @cl:doc(function affine-transform)      
+      )
+   @end(section)
 @end(section)
