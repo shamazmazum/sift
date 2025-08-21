@@ -1,4 +1,4 @@
-(in-package :sift)
+(in-package :sift/core)
 
 ;; Here we have a function F of type SCALAR-FIELD which takes 3
 ;; integer arguments (wrapped in INDEX3) and returns a single

@@ -1,4 +1,4 @@
-(in-package :sift)
+(in-package :sift/core)
 
 (declaim (inline interp))
 (defun interp (v1 v2 x)

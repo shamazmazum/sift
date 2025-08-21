@@ -1,4 +1,4 @@
-(in-package :sift)
+(in-package :sift/core)
 
 (sera:defconstructor index3
   (i fixnum)

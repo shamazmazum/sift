@@ -2,7 +2,7 @@
 
 (defun adjust-coordinates (keypoint)
   (multiple-value-bind (x y)
-      (sift:image-coordinate keypoint)
+      (sift/core:image-coordinate keypoint)
     (cons (floor x)
           (floor y))))
 
@@ -24,9 +24,9 @@
                        (random 255)
                        (random 255))
           for kp in keypoints
-          for octave = (sift:keypoint-octave kp)
+          for octave = (sift/core:keypoint-octave kp)
           for (y . x) = (adjust-coordinates kp)
-          for angle = (sift:keypoint-angle kp)
+          for angle = (sift/core:keypoint-angle kp)
           for r = (* 4 (expt 2 octave))
           do
           (imago:draw-circle

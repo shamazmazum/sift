@@ -12,7 +12,7 @@
                  '(linalg3 linalg2 interp descr regis))))
 
 (defun mat3-rand ()
-  (sift:make-mat3
+  (sift/core:make-mat3
    (random 1f0)
    (random 1f0)
    (random 1f0)
@@ -24,7 +24,7 @@
    (random 1f0)))
 
 (defun mat2-rand ()
-  (sift:make-mat2
+  (sift/core:make-mat2
    (random 1f0)
    (random 1f0)
    (random 1f0)
@@ -33,22 +33,24 @@
 (defun unitary3-rand ()
   (let* ((ϕ (random (* 2 +pi+)))
          (ψ (random (* 2 +pi+)))
-         (m1 (sift:make-mat3 (cos ϕ) (- (sin ϕ)) 0f0 (sin ϕ) (cos ϕ) 0f0 0f0 0f0 1f0))
-         (m2 (sift:make-mat3 (cos ψ) 0f0 (- (sin ψ)) 0f0 1f0 0f0 (sin ψ) 0f0 (cos ψ))))
-    (sift:mul3 m1 m2)))
+         (m1 (sift/core:make-mat3
+              (cos ϕ) (- (sin ϕ)) 0f0 (sin ϕ) (cos ϕ) 0f0 0f0 0f0 1f0))
+         (m2 (sift/core:make-mat3
+              (cos ψ) 0f0 (- (sin ψ)) 0f0 1f0 0f0 (sin ψ) 0f0 (cos ψ))))
+    (sift/core:mul3 m1 m2)))
 
 (defun unitary2-rand ()
   (let ((ϕ (random (* 2 +pi+))))
-    (sift:make-mat2 (cos ϕ) (- (sin ϕ)) (sin ϕ) (cos ϕ))))
+    (sift/core:make-mat2 (cos ϕ) (- (sin ϕ)) (sin ϕ) (cos ϕ))))
 
 (defun linear-function (x y z)
   (+ (* 10 x) (* 4 y) (* 6 z) 34))
 
 (defun %linear-function (index)
   (linear-function
-   (float (sift:index3-i index) 0f0)
-   (float (sift:index3-j index) 0f0)
-   (float (sift:index3-k index) 0f0)))
+   (float (sift/core:index3-i index) 0f0)
+   (float (sift/core:index3-j index) 0f0)
+   (float (sift/core:index3-k index) 0f0)))
 
 ;; Neumann, Rodrigo, ANDREETA, MARIANE, Lucas-Oliveira, Everton. "11
 ;; Sandstones: raw, filtered and segmented data." Digital Rocks
@@ -72,20 +74,20 @@
 (test mul-identity3
   (loop repeat 3000
         for m = (mat3-rand) do
-        (is (approx:array-approx-p m (sift:mul3 m sift:+mat3-identity+)))
-        (is (approx:array-approx-p m (sift:mul3 sift:+mat3-identity+ m)))))
+        (is (approx:array-approx-p m (sift/core:mul3 m sift/core:+mat3-identity+)))
+        (is (approx:array-approx-p m (sift/core:mul3 sift/core:+mat3-identity+ m)))))
 
 (test determinant3
   (loop repeat 3000
         for m1 = (mat3-rand)
         for m2 = (mat3-rand)
-        when (> (sift:det3 (sift:mul3 m2 m1)) 1f-3) do
+        when (> (sift/core:det3 (sift/core:mul3 m2 m1)) 1f-3) do
         (is (approx:approxp
-             (* (sift:det3 m1) (sift:det3 m2))
-             (sift:det3 (sift:mul3 m1 m2))))
+             (* (sift/core:det3 m1) (sift/core:det3 m2))
+             (sift/core:det3 (sift/core:mul3 m1 m2))))
         (is (approx:approxp
-             (* (sift:det3 m1) (sift:det3 m2))
-             (sift:det3 (sift:mul3 m2 m1))))))
+             (* (sift/core:det3 m1) (sift/core:det3 m2))
+             (sift/core:det3 (sift/core:mul3 m2 m1))))))
 
 (test trace3
   (loop repeat 3000
@@ -93,35 +95,38 @@
         for m2 = (unitary3-rand)
         do
         (is (approx:approxp
-             (sift:trace3 m1)
-             (sift:trace3 (sift:mul3 m2 (sift:mul3 m1 (sift:inv3 m2))))))))
+             (sift/core:trace3 m1)
+             (sift/core:trace3
+              (sift/core:mul3 m2 (sift/core:mul3 m1 (sift/core:inv3 m2))))))))
 
 (test inversion3
   (loop repeat 3000
         for m = (mat3-rand)
-        when (> (sift:det3 m) 1f-3) do
-        (is (approx:array-approx-p sift:+mat3-identity+ (sift:mul3 m (sift:inv3 m))))
-        (is (approx:array-approx-p sift:+mat3-identity+ (sift:mul3 (sift:inv3 m) m)))))
+        when (> (sift/core:det3 m) 1f-3) do
+        (is (approx:array-approx-p
+             sift/core:+mat3-identity+ (sift/core:mul3 m (sift/core:inv3 m))))
+        (is (approx:array-approx-p
+             sift/core:+mat3-identity+ (sift/core:mul3 (sift/core:inv3 m) m)))))
 
 (in-suite linalg2)
 
 (test mul-identity2
   (loop repeat 3000
         for m = (mat2-rand) do
-        (is (approx:array-approx-p m (sift:mul2 m sift:+mat2-identity+)))
-        (is (approx:array-approx-p m (sift:mul2 sift:+mat2-identity+ m)))))
+        (is (approx:array-approx-p m (sift/core:mul2 m sift/core:+mat2-identity+)))
+        (is (approx:array-approx-p m (sift/core:mul2 sift/core:+mat2-identity+ m)))))
 
 (test determinant2
   (loop repeat 3000
         for m1 = (mat2-rand)
         for m2 = (mat2-rand)
-        when (> (sift:det2 (sift:mul2 m2 m1)) 1f-3) do
+        when (> (sift/core:det2 (sift/core:mul2 m2 m1)) 1f-3) do
         (is (approx:approxp
-             (* (sift:det2 m1) (sift:det2 m2))
-             (sift:det2 (sift:mul2 m1 m2))))
+             (* (sift/core:det2 m1) (sift/core:det2 m2))
+             (sift/core:det2 (sift/core:mul2 m1 m2))))
         (is (approx:approxp
-             (* (sift:det2 m1) (sift:det2 m2))
-             (sift:det2 (sift:mul2 m2 m1))))))
+             (* (sift/core:det2 m1) (sift/core:det2 m2))
+             (sift/core:det2 (sift/core:mul2 m2 m1))))))
 
 (test trace2
   (loop repeat 3000
@@ -129,15 +134,18 @@
         for m2 = (unitary2-rand)
         do
         (is (approx:approxp
-             (sift:trace2 m1)
-             (sift:trace2 (sift:mul2 m2 (sift:mul2 m1 (sift:inv2 m2))))))))
+             (sift/core:trace2 m1)
+             (sift/core:trace2
+              (sift/core:mul2 m2 (sift/core:mul2 m1 (sift/core:inv2 m2))))))))
 
 (test inversion2
   (loop repeat 3000
         for m = (mat2-rand)
-        when (> (sift:det2 m) 1f-3) do
-        (is (approx:array-approx-p sift:+mat2-identity+ (sift:mul2 m (sift:inv2 m))))
-        (is (approx:array-approx-p sift:+mat2-identity+ (sift:mul2 (sift:inv2 m) m)))))
+        when (> (sift/core:det2 m) 1f-3) do
+        (is (approx:array-approx-p
+             sift/core:+mat2-identity+ (sift/core:mul2 m (sift/core:inv2 m))))
+        (is (approx:array-approx-p
+             sift/core:+mat2-identity+ (sift/core:mul2 (sift/core:inv2 m) m)))))
 
 (in-suite interp)
 
@@ -148,7 +156,7 @@
         for z = (random 10f0) do
         (is (approx:approxp
              (linear-function x y z)
-             (sift:interpolate #'%linear-function x y z)))))
+             (sift/core:interpolate #'%linear-function x y z)))))
 
 (in-suite descr)
 
@@ -187,7 +195,7 @@
         for slice2 = (sift/debug:rotate-array (sift/debug:scale-array slice s s) ϕ)
         for m1 = (sift/debug:scale-transform s)
         for m2 = (sift/debug:rotation-transform (* s 1000) ϕ)
-        for m = (sift:mul3 m2 m1) sum
+        for m = (sift/core:mul3 m2 m1) sum
         (test-matches slice slice2 m)))
 
 (in-suite regis)

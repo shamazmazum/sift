@@ -1,4 +1,4 @@
-(in-package :sift)
+(in-package :sift/core)
 
 (declaim (inline make-coord-vector))
 (defun make-coord-vector (i j k)

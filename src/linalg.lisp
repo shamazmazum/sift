@@ -1,4 +1,7 @@
-(in-package :sift)
+(in-package :sift/core)
+
+;; Much faster linear algebra for small matrices and vectors compared
+;; to magicl.
 
 (deftype mat (n) `(simple-array single-float (,n ,n)))
 (deftype vec (n) `(simple-array single-float (,n)))

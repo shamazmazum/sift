@@ -1,5 +1,5 @@
-(defsystem :sift
-  :name :sift
+(defsystem :sift/core
+  :name :sift/core
   :version "0.1"
   :author "Vasily Postnicov <shamaz.mazum@gmail.com>"
   :description "Scale-invariant image keypoints with descriptors"
@@ -23,11 +23,7 @@
                :serapeum
                :alexandria
                :float-features
-               :picolens)
-  :in-order-to ((test-op (load-op "sift/tests")))
-  :perform (test-op (op system)
-                    (declare (ignore op system))
-                    (uiop:symbol-call :sift/tests '#:run-tests)))
+               :picolens))
 
 (defsystem :sift/debug
   :name :sift/debug
@@ -41,7 +37,7 @@
                (:file "draw-matches")
                (:file "image-io")
                (:file "success-rates"))
-  :depends-on (:sift :imago :array-operations))
+  :depends-on (:sift/core :imago :array-operations))
 
 (defsystem :sift/registration
   :name :sift/registration
@@ -52,16 +48,21 @@
   :serial t
   :components ((:file "package")
                (:file "affine-transform"))
-  :depends-on (:sift :magicl))
+  :depends-on (:sift/core :magicl))
 
-(defsystem :sift/all
-  :name :sift/all
+(defsystem :sift
+  :name :sift
   :version "0.1"
   :author "Vasily Postnicov <shamaz.mazum@gmail.com>"
   :licence "2-clause BSD"
-  :depends-on (:sift
+  :depends-on (:sift/core
                :sift/debug
-               :sift/registration))
+               :sift/registration)
+  
+  :in-order-to ((test-op (load-op "sift/tests")))
+  :perform (test-op (op system)
+                    (declare (ignore op system))
+                    (uiop:symbol-call :sift/tests '#:run-tests)))
 
 (defsystem :sift/tests
   :name :sift/tests
@@ -72,7 +73,7 @@
   :serial t
   :components ((:file "package")
                (:file "tests"))
-  :depends-on (:sift/all
+  :depends-on (:sift
                :select
                :fiveam
                :numpy-npy

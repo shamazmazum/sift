@@ -1,4 +1,4 @@
-(in-package :sift)
+(in-package :sift/core)
 
 (sera:-> gaussian-parameter
          ((single-float (0f0)) fixnum alex:positive-fixnum)

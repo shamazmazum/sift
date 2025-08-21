@@ -1,4 +1,4 @@
-(defpackage sift
+(defpackage sift/core
   (:use #:cl)
   (:local-nicknames (#:alex #:alexandria)
                     (#:sera #:serapeum)

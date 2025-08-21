@@ -8,7 +8,7 @@
 (defun matches->matrices (matches)
   (flet ((coord-list (kp)
            (multiple-value-bind (x y)
-               (sift:image-coordinate kp)
+               (sift/core:image-coordinate kp)
              (list x y 1f0))))
     (multiple-value-bind (xs ys n)
         (loop for (kp1 . kp2) in matches
@@ -115,7 +115,7 @@ without repetitions."
     (%go nil ff:single-float-positive-infinity n)))
 
 (sera:-> matrix->array (magicl:matrix/single-float)
-         (values (sift:mat 3) &optional))
+         (values (sift/core:mat 3) &optional))
 (defun matrix->array (m)
   (let ((res (make-array '(3 3) :element-type 'single-float)))
     (loop for i below 3 do
@@ -129,7 +129,7 @@ without repetitions."
                                 (:seed-points alex:positive-fixnum)
                                 (:well-fit    alex:positive-fixnum)
                                 (:err         (single-float 0f0)))
-         (values (or (sift:mat 3) null) &optional))
+         (values (or (sift/core:mat 3) null) &optional))
 (defun affine-transform (matches &key (max-iter 10) (seed-points 10) (well-fit 50) (err 1f0))
   "Find an affine transform matrix which transform the first keypoint
 in each pair of matches to the second keypoint. Keypoint parameters

@@ -1,4 +1,4 @@
-(in-package :sift)
+(in-package :sift/core)
 
 ;; Downsample an image using the ideal low-pass filter
 

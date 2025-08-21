@@ -1,4 +1,4 @@
-(in-package :sift)
+(in-package :sift/core)
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
   (defconstant +pi+ (float pi 0f0)))

@@ -1,4 +1,4 @@
-(in-package :sift)
+(in-package :sift/core)
 
 (sera:-> descriptor-metric (%descriptor %descriptor)
          (values (single-float 0f0) &optional))

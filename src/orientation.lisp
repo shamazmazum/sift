@@ -1,4 +1,4 @@
-(in-package :sift)
+(in-package :sift/core)
 
 (sera:-> evaluate-neighbor ((simple-array single-float (* * *))
                             (vec 3))

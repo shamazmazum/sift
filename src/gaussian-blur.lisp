@@ -1,4 +1,4 @@
-(in-package :sift)
+(in-package :sift/core)
 
 (sera:-> gaussian-kernel-1d ((single-float (0f0)))
          (values (simple-array single-float (*)) &optional))

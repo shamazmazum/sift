@@ -1,4 +1,4 @@
-(in-package :sift)
+(in-package :sift/core)
 
 (deftype %descriptor () '(simple-array single-float (128)))
 
