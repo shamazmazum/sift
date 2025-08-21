@@ -42,7 +42,7 @@
   <h1 class="doc-title">SIFT (scale-invariant feature descriptors) for Common Lisp</h1>
   <article id="article" data-section="index">
     <aside>
-      <ol class="toc"><li><a href="index.html" data-node="index">Overview</a></li><li><a href="how-to.html" data-node="how-to">How-to</a></li><li><a href="api.html" data-node="api">API</a></li></ol>
+      <ol class="toc"><li><a href="index.html" data-node="index">Overview</a><ol><li><a href="index.html#an-example" data-node="an-example">An example</a></li><li><a href="index.html#dependencies" data-node="dependencies">Dependencies</a></li><li><a href="index.html#citation" data-node="citation">Citation</a></li></ol></li><li><a href="how-to.html" data-node="how-to">How-to</a></li><li><a href="api.html" data-node="api">API</a><ol><li><a href="package--sift-core.html" data-node="package--sift-core">Package <code>sift/core</code></a></li><li><a href="package--sift-debug.html" data-node="package--sift-debug">Package <code>sift/debug</code></a></li><li><a href="package--sift-registration.html" data-node="package--sift-registration">Package <code>sift/registration</code></a></li></ol></li></ol>
     </aside>
     <main class="codex-section">
       <header>
@@ -52,21 +52,30 @@
         <p>
    <code>SIFT</code> is a library which implements an algorithm of the same name which is
    used for image features describing. The resulting descriptors are scale and
-   rotation invariant and insensitive to noise.</p><p>   An example:
-   </p><pre><code class="lisp">(let* ((data1 (sift/debug:load-image &quot;img.png&quot;))
+   rotation invariant and insensitive to noise.</p><p>   </p><h1 id="an-example">An example</h1>
+      <pre><code class="lisp">(let* ((data1 (sift/debug:load-image &quot;img.png&quot;))
        ;; Scale and rotate the image
-       (data2 (sift/debug:rotate-array (sift/debug:scale-array *foo* 1.4d0 1.4d0) 3d-1))
+       (data2 (sift/debug:rotate-array (sift/debug:scale-array data1 1.4 1.4) 3f-1))
        ;; Calculate keypoints and descriptors
-       (kp1 (sift:descriptors (sift:gaussian-scale-space data1)))
-       (kp2 (sift:descriptors (sift:gaussian-scale-space data2)))
+       (kp1 (sift/core:descriptors (sift/core:gaussian-scale-space data1)))
+       (kp2 (sift/core:descriptors (sift/core:gaussian-scale-space data2)))
        ;; Find matches
-       (matches (sift:find-matches kp1 kp2)))
+       (matches (sift/core:find-matches kp1 kp2)))
   ;; Draw matches using imago
   (sift/debug:draw-matches data1 data2 matches))
-   </code></pre><p>   <img src="matches.png"/></p><p>   Citation of the original algo:
-   Lowe, D.G. Distinctive Image Features from Scale-Invariant
-   Keypoints. International Journal of Computer Vision 60, 91–110
-   (2004). https://doi.org/10.1023/B:VISI.0000029664.99615.94
+      </code></pre>
+      <img src="matches.png"/>
+   <p>   </p><h1 id="dependencies">Dependencies</h1>
+      The system <code>sift</code> depends on a few C libraries. You need these:
+      <ul><li>fftw3f (FFTW for single precision floats).</li><li>BLAS (libblas.so)</li><li>LAPACK (liblapack.so)</li><li>A C compiler (cc)</li></ul>
+      If you do not want image registration stuff and need pure SIFT
+      descriptors, you may load <code>sift/core</code> instead of <code>sift</code> which does not
+      require BLAS and LAPACK.
+   <p>   </p><h1 id="citation">Citation</h1>
+      Lowe, D.G. Distinctive Image Features from Scale-Invariant
+      Keypoints. International Journal of Computer Vision 60, 91–110
+      (2004). https://doi.org/10.1023/B:VISI.0000029664.99615.94
+   <p>
 </p>
       </div>
     </main>

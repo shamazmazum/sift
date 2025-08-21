@@ -42,7 +42,7 @@
   <h1 class="doc-title">SIFT (scale-invariant feature descriptors) for Common Lisp</h1>
   <article id="article" data-section="how-to">
     <aside>
-      <ol class="toc"><li><a href="index.html" data-node="index">Overview</a></li><li><a href="how-to.html" data-node="how-to">How-to</a></li><li><a href="api.html" data-node="api">API</a></li></ol>
+      <ol class="toc"><li><a href="index.html" data-node="index">Overview</a><ol><li><a href="index.html#an-example" data-node="an-example">An example</a></li><li><a href="index.html#dependencies" data-node="dependencies">Dependencies</a></li><li><a href="index.html#citation" data-node="citation">Citation</a></li></ol></li><li><a href="how-to.html" data-node="how-to">How-to</a></li><li><a href="api.html" data-node="api">API</a><ol><li><a href="package--sift-core.html" data-node="package--sift-core">Package <code>sift/core</code></a></li><li><a href="package--sift-debug.html" data-node="package--sift-debug">Package <code>sift/debug</code></a></li><li><a href="package--sift-registration.html" data-node="package--sift-registration">Package <code>sift/registration</code></a></li></ol></li></ol>
     </aside>
     <main class="codex-section">
       <header>
@@ -50,7 +50,7 @@
       </header>
       <div class="content">
         
-   First of all, convert your image to a two-dimensional array of double floats
+   First of all, convert your image to a two-dimensional array of single floats
    where elements vary from zero to one. Than convert the array to a Gaussian
    scale space representation using <code>gaussian-scale-space</code>. I recommend
    leaving keyword parameters as is. Read the original paper if you want to know

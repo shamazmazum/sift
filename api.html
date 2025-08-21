@@ -42,32 +42,41 @@
   <h1 class="doc-title">SIFT (scale-invariant feature descriptors) for Common Lisp</h1>
   <article id="article" data-section="api">
     <aside>
-      <ol class="toc"><li><a href="index.html" data-node="index">Overview</a></li><li><a href="how-to.html" data-node="how-to">How-to</a></li><li><a href="api.html" data-node="api">API</a></li></ol>
+      <ol class="toc"><li><a href="index.html" data-node="index">Overview</a><ol><li><a href="index.html#an-example" data-node="an-example">An example</a></li><li><a href="index.html#dependencies" data-node="dependencies">Dependencies</a></li><li><a href="index.html#citation" data-node="citation">Citation</a></li></ol></li><li><a href="how-to.html" data-node="how-to">How-to</a></li><li><a href="api.html" data-node="api">API</a><ol><li><a href="api.html#package--sift-core" data-node="package--sift-core">Package <code>sift/core</code></a></li><li><a href="api.html#package--sift-debug" data-node="package--sift-debug">Package <code>sift/debug</code></a></li><li><a href="api.html#package--sift-registration" data-node="package--sift-registration">Package <code>sift/registration</code></a></li></ol></li></ol>
     </aside>
     <main class="codex-section">
       <header>
         <h2 class="section-title">API</h2>
       </header>
       <div class="content">
-        <p>   
-     <div class="codex-doc-node codex-operator codex-function"><code class="codex-name">gaussian-scale-space</code><code class="codex-lambda-list">(a &amp;key (σ 1.6d0) (n 3) (m 3))</code><div class="codex-docstring">Compute a set of blurred images of <code>A</code> which constitutes a scale
-space of <code>A</code> with <code>M</code> octaves, <code>N</code> images per octave. Each
-octave also contains one image below it and two images above it.</div></div>
-     <div class="codex-doc-node codex-operator codex-function"><code class="codex-name">keypoints</code><code class="codex-lambda-list">(scale-space)</code><div class="codex-docstring">Detect keypoints in a scale space.</div></div>
-     <div class="codex-doc-node codex-operator codex-function"><code class="codex-name">descriptors</code><code class="codex-lambda-list">(scale-space)</code><div class="codex-docstring">Calculate keypoints and descriptors (128-element vectors) for a scale space.</div></div>
-     <div class="codex-doc-node codex-operator codex-function"><code class="codex-name">describe-point</code><code class="codex-lambda-list">(keypoint scale-space)</code><div class="codex-docstring">Describe a keypoint in a scale space. The descriptor is a vector of 128 float values
-which is invariant to linear transformations of the image which produced this scale
-space.</div></div>
-     <div class="codex-doc-node codex-operator codex-function"><code class="codex-name">find-matches</code><code class="codex-lambda-list">(set1 set2)</code><div class="codex-docstring">Find matching keypoints in <code>SET1</code> and <code>SET2</code>. A point from the
-first set can have at most one corresponding point from the second
-set. Algoritmic complexity: \(O(n \cdot m\)), \(n\) and \(m\)
-being numbers of elements in each set.</div></div>
-     <div class="codex-doc-node codex-record codex-defconstructor"><code class="codex-name">keypoint</code><div class="codex-docstring">A structure which describes a keypoint in an image.</div><ul class="codex-slot-list"><li class="codex-slot codex-structure-slot"><code class="codex-name">coord</code><div class="codex-class-struct-slot-option-node"><table class="codex-class-struct-slot-option-table"><tr class="codex-class-struct-slot-option-row"><td class="codex-class-struct-slot-option-label-cell">Type</td><td class="codex-class-struct-slot-option-value-cell codex-class-struct-slot-option-symbol-list-cell"><code class="codex-class-struct-slot-symbol-list">(sift:vec 3)</code></td></tr><tr class="codex-class-struct-slot-option-row"><td class="codex-class-struct-slot-option-label-cell">Reader</td><td class="codex-class-struct-slot-option-value-cell codex-class-struct-slot-option-symbol-list-cell"><code class="codex-class-struct-slot-symbol-list">sift:keypoint-coord</code></td></tr></table></div></li><li class="codex-slot codex-structure-slot"><code class="codex-name">index</code><div class="codex-class-struct-slot-option-node"><table class="codex-class-struct-slot-option-table"><tr class="codex-class-struct-slot-option-row"><td class="codex-class-struct-slot-option-label-cell">Type</td><td class="codex-class-struct-slot-option-value-cell codex-class-struct-slot-option-symbol-list-cell"><code class="codex-class-struct-slot-symbol-list">sift:index3</code></td></tr><tr class="codex-class-struct-slot-option-row"><td class="codex-class-struct-slot-option-label-cell">Reader</td><td class="codex-class-struct-slot-option-value-cell codex-class-struct-slot-option-symbol-list-cell"><code class="codex-class-struct-slot-symbol-list">sift:keypoint-index</code></td></tr></table></div></li><li class="codex-slot codex-structure-slot"><code class="codex-name">octave</code><div class="codex-class-struct-slot-option-node"><table class="codex-class-struct-slot-option-table"><tr class="codex-class-struct-slot-option-row"><td class="codex-class-struct-slot-option-label-cell">Type</td><td class="codex-class-struct-slot-option-value-cell codex-class-struct-slot-option-symbol-list-cell"><code class="codex-class-struct-slot-symbol-list">alexandria:non-negative-fixnum</code></td></tr><tr class="codex-class-struct-slot-option-row"><td class="codex-class-struct-slot-option-label-cell">Reader</td><td class="codex-class-struct-slot-option-value-cell codex-class-struct-slot-option-symbol-list-cell"><code class="codex-class-struct-slot-symbol-list">sift:keypoint-octave</code></td></tr></table></div></li><li class="codex-slot codex-structure-slot"><code class="codex-name">σ</code><div class="codex-class-struct-slot-option-node"><table class="codex-class-struct-slot-option-table"><tr class="codex-class-struct-slot-option-row"><td class="codex-class-struct-slot-option-label-cell">Type</td><td class="codex-class-struct-slot-option-value-cell codex-class-struct-slot-option-symbol-list-cell"><code class="codex-class-struct-slot-symbol-list">(double-float (0.0d0))</code></td></tr><tr class="codex-class-struct-slot-option-row"><td class="codex-class-struct-slot-option-label-cell">Reader</td><td class="codex-class-struct-slot-option-value-cell codex-class-struct-slot-option-symbol-list-cell"><code class="codex-class-struct-slot-symbol-list">sift::keypoint-σ</code></td></tr></table></div></li><li class="codex-slot codex-structure-slot"><code class="codex-name">angle</code><div class="codex-class-struct-slot-option-node"><table class="codex-class-struct-slot-option-table"><tr class="codex-class-struct-slot-option-row"><td class="codex-class-struct-slot-option-label-cell">Type</td><td class="codex-class-struct-slot-option-value-cell codex-class-struct-slot-option-symbol-list-cell"><code class="codex-class-struct-slot-symbol-list">(double-float 0.0d0 (6.283185307179586d0))</code></td></tr><tr class="codex-class-struct-slot-option-row"><td class="codex-class-struct-slot-option-label-cell">Reader</td><td class="codex-class-struct-slot-option-value-cell codex-class-struct-slot-option-symbol-list-cell"><code class="codex-class-struct-slot-symbol-list">sift:keypoint-angle</code></td></tr></table></div></li></ul></div>
-     <div class="codex-doc-node codex-record codex-defconstructor"><code class="codex-name">descriptor</code><div class="codex-docstring">A structure which containt a keypoint and an associated descriptor</div><ul class="codex-slot-list"><li class="codex-slot codex-structure-slot"><code class="codex-name">keypoint</code><div class="codex-class-struct-slot-option-node"><table class="codex-class-struct-slot-option-table"><tr class="codex-class-struct-slot-option-row"><td class="codex-class-struct-slot-option-label-cell">Type</td><td class="codex-class-struct-slot-option-value-cell codex-class-struct-slot-option-symbol-list-cell"><code class="codex-class-struct-slot-symbol-list">sift:keypoint</code></td></tr><tr class="codex-class-struct-slot-option-row"><td class="codex-class-struct-slot-option-label-cell">Reader</td><td class="codex-class-struct-slot-option-value-cell codex-class-struct-slot-option-symbol-list-cell"><code class="codex-class-struct-slot-symbol-list">sift:descriptor-keypoint</code></td></tr></table></div></li><li class="codex-slot codex-structure-slot"><code class="codex-name">array</code><div class="codex-class-struct-slot-option-node"><table class="codex-class-struct-slot-option-table"><tr class="codex-class-struct-slot-option-row"><td class="codex-class-struct-slot-option-label-cell">Type</td><td class="codex-class-struct-slot-option-value-cell codex-class-struct-slot-option-symbol-list-cell"><code class="codex-class-struct-slot-symbol-list">sift::%descriptor</code></td></tr><tr class="codex-class-struct-slot-option-row"><td class="codex-class-struct-slot-option-label-cell">Reader</td><td class="codex-class-struct-slot-option-value-cell codex-class-struct-slot-option-symbol-list-cell"><code class="codex-class-struct-slot-symbol-list">sift:descriptor-array</code></td></tr></table></div></li></ul></div>
-     <div class="codex-doc-node codex-operator codex-function"><code class="codex-name">image-coordinate</code><code class="codex-lambda-list">(keypoint)</code><div class="codex-docstring">Return coordinates of a keypoint in a coordinate system of the
-image (scale level 0).</div></div>
+        
+   <h1 id="package--sift-core">Package <code>sift/core</code></h1>
+      
+         <div class="codex-error codex-no-node">No node with name <code>gaussian-scale-space</code>.</div>
+         <div class="codex-error codex-no-node">No node with name <code>keypoints</code>.</div>
+         <div class="codex-error codex-no-node">No node with name <code>descriptors</code>.</div>
+         <div class="codex-error codex-no-node">No node with name <code>describe-point</code>.</div>
+         <div class="codex-error codex-no-node">No node with name <code>find-matches</code>.</div>
+         <div class="codex-error codex-no-node">No node with name <code>keypoint</code>.</div>
+         <div class="codex-error codex-no-node">No node with name <code>descriptor</code>.</div>
+         <div class="codex-error codex-no-node">No node with name <code>image-coordinate</code>.</div>
+         <div class="codex-error codex-no-node">No node with name <code>image-coordinate-vector</code>.</div>
+      
    
-</p>
+   <h1 id="package--sift-debug">Package <code>sift/debug</code></h1>
+      
+         <div class="codex-error codex-no-node">No node with name <code>draw-keypoints</code>.</div>
+         <div class="codex-error codex-no-node">No node with name <code>draw-matches</code>.</div>
+         <div class="codex-error codex-no-node">No node with name <code>load-image</code>.</div>
+         <div class="codex-error codex-no-node">No node with name <code>write-image</code>.</div>         
+      
+   
+   <h1 id="package--sift-registration">Package <code>sift/registration</code></h1>
+      
+         <div class="codex-error codex-no-node">No node with name <code>affine-transform</code>.</div>      
+      
+   
+
       </div>
     </main>
   </article>
