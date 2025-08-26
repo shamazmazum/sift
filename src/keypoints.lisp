@@ -15,15 +15,13 @@
   (declare (optimize (speed 3)))
   (let ((min ff:single-float-positive-infinity)
         (max ff:single-float-negative-infinity)
-        (h (array-dimension array 1))
-        (w (array-dimension array 2))
         (v (aref array l i j)))
     ;; TODO: Why I should add this declaration? Why I should not when
     ;; using double-float? Investigate this.
     (declare (type single-float min max))
     (loop-ranges ((%l -1 2) (%i -1 2) (%j -1 2))
      (when (or (not (zerop %l)) (not (zerop %i)) (not (zerop %j)))
-       (let ((v (aref array (+ l %l) (mod (+ i %i) h) (mod (+ j %j) w))))
+       (let ((v (aref array (+ l %l) (+ i %i) (+ j %j))))
          (setq min (min min v)
                max (max max v)))))
     ;; A point is a keypoint if its value in DoG space is greater than
@@ -81,7 +79,7 @@
          keypoints)
     ;; Hessian can be not invertible
     (ff:with-float-traps-masked (:overflow :invalid :divide-by-zero)
-      (loop-ranges ((l 1 (1- n)) (i 0 h) (j 0 w))
+      (loop-ranges ((l 1 (1- n)) (i 1 (1- h)) (j 1 (1- w)))
        (when (keypointp dog-space l i j)
          (let ((keypoint (adjust-keypoint
                           (keypoint

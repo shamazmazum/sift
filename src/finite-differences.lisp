@@ -37,11 +37,14 @@
    (derivative/1 f index +shift-y+)
    (derivative/1 f index +shift-z+)))
 
+;; NB: This function and HESSIAN/ARRAY are never called on border
+;; pixels (i.e. pixels having coordinates 0 or DIM-1). Therefore it's
+;; safe to use AREF-INDEX3 here and not AREF-INDEX3/P.
 (declaim (inline gradient/array))
 (defun gradient/array (array index)
   (gradient
    (lambda (index)
-     (aref-index3/p array index))
+     (aref-index3 array index))
    index))
 
 (sera:-> derivative/2m (scalar-field index3 index3 index3)
@@ -84,5 +87,5 @@
 (defun hessian/array (array index)
   (hessian
    (lambda (index)
-     (aref-index3/p array index))
+     (aref-index3 array index))
    index))
