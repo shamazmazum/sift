@@ -62,8 +62,8 @@
 
 (sera:-> scalev ((vec *) single-float)
          (values (vec *) &optional))
-(declaim (inline scale))
-(defun scale (v s)
+(declaim (inline scalev))
+(defun scalev (v s)
   (let ((result (make-array (length v) :element-type 'single-float)))
     (loop-array (result (i))
      (setf (aref result i)
