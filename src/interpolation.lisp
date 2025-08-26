@@ -27,6 +27,7 @@
                 (qz rz z))
     ;; For better code formatting
     (flet ((id (x) x))
+      (declare (inline id))
       (let* ((idx000 (index3 (id qx) (id qy) (id qz)))
              (idx001 (index3 (id qx) (id qy) (1+ qz)))
              (idx010 (index3 (id qx) (1+ qy) (id qz)))
