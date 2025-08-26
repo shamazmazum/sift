@@ -46,8 +46,8 @@
 (defun adjust-keypoint (keypoint dog)
   (let* ((index (keypoint-index keypoint))
          ;; Adjust the coordinate
-         (hessian  (hessian/array  dog index))
-         (gradient (gradient/array dog index))
+         (hessian  (hessian  dog index))
+         (gradient (gradient dog index))
          (diff (scalev (mul-mv (inv3 hessian) gradient) -1f0)))
     ;; Drop keypoints with enormous extremum correction
     (if (shift-ok-p diff)

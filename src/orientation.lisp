@@ -7,12 +7,10 @@
   "Return a direction of the gradient and its magnitude at this
 point."
   (declare (optimize (speed 3)))
-  (labels ((access (index)
-             (aref-index3/p array index))
-           (derivative (direction)
+  (labels ((derivative (direction)
              (interpolate
               (lambda (index)
-                (derivative/1 #'access index direction))
+                (derivative/1 array index direction))
               (aref coord 0)
               (aref coord 1)
               (aref coord 2))))

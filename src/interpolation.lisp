@@ -1,5 +1,7 @@
 (in-package :sift/core)
 
+(deftype scalar-field () '(sera:-> (index3) (values single-float &optional)))
+
 (declaim (inline interp))
 (defun interp (v1 v2 x)
   (+ v1 (* x (- v2 v1))))
@@ -20,7 +22,6 @@
 
 (sera:-> interpolate (scalar-field single-float single-float single-float)
          (values single-float &optional))
-(declaim (inline interpolate))
 (defun interpolate (f x y z)
   (bind-coords ((qx rx x)
                 (qy ry y)
