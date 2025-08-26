@@ -43,21 +43,6 @@
           (* (index3-j idx) s)
           (* (index3-k idx) s)))
 
-(declaim (inline aref-index3/p))
-(sera:-> aref-index3/p ((simple-array * (* * *)) index3)
-         (values t &optional))
-(defun aref-index3/p (array idx)
-  (aref array
-        ;; Periodic boundary conditions on the layer coordinate is not
-        ;; what I want. On spatial dimensions, though, they are
-        ;; acceptable. Moreover, I do image filtering via FFT which
-        ;; imposes periodic BC. If this is a problem, we can simply
-        ;; discard keypoints which are close (~10 pixels) to the
-        ;; boundary.
-        (index3-i idx)
-        (mod (index3-j idx) (array-dimension array 1))
-        (mod (index3-k idx) (array-dimension array 2))))
-
 (declaim (inline aref-index3))
 (sera:-> aref-index3 ((simple-array * (* * *)) index3)
          (values t &optional))

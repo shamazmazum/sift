@@ -22,7 +22,7 @@
   (let ((p1 (index3-+ index dir))
         (p2 (index3-- index dir)))
     (declare (dynamic-extent p1 p2))
-    (/ (- (aref-index3/p a p1) (aref-index3/p a p2)) 2)))
+    (/ (- (aref-index3 a p1) (aref-index3 a p2)) 2)))
 
 (sera:-> gradient ((simple-array single-float (* * *)) index3)
          (values (vec 3) &optional))
@@ -54,7 +54,7 @@
   (let ((p1 (index3-+ index shift))
         (p2 (index3-- index shift)))
     (declare (dynamic-extent p1 p2))
-    (+ (aref-index3/p a p1) (aref-index3/p a p2) (* (aref-index3/p a index) -2))))
+    (+ (aref-index3 a p1) (aref-index3 a p2) (* (aref-index3 a index) -2))))
 
 (sera:-> hessian ((simple-array single-float (* * *)) index3)
          (values (mat 3) &optional))
