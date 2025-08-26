@@ -76,24 +76,24 @@
          (2/s (/ 2f0 s))
          (s/2 (/ s 2f0))
          (cs/2 (* s/2 (+ cos sin)))
-         (a (sift/core:make-mat3
+         (a (sift/core:mat3
              2/s 0f0 -1f0
              0f0 2/s -1f0
              0f0 0f0 1f0))
-         (b (sift/core:make-mat3
+         (b (sift/core:mat3
              cos sin 0f0
              (- sin) cos 0f0
              0f0 0f0 1f0))
-         (c (sift/core:make-mat3
+         (c (sift/core:mat3
              s/2 0f0 cs/2
              0f0 s/2 cs/2
              0f0 0f0 1f0)))
-    (sift/core:mul3 c (sift/core:mul3 b a))))
+    (sift/core:mul c (sift/core:mul b a))))
 
 (defun scale-transform (s)
-  (sift/core:make-mat3  s  0f0 0f0
-                   0f0  s  0f0
-                   0f0 0f0 1f0))
+  (sift/core:mat3 s  0f0 0f0
+                  0f0  s  0f0
+                  0f0 0f0 1f0))
 
 (defun success-rates (data1 data2 m &key (spatial-error 4f0))
   (let* ((kp1 (sift/core:descriptors (sift/core:gaussian-scale-space data1)))
@@ -101,13 +101,13 @@
          (matches (sift/core:find-matches kp1 kp2))
          (correct 0))
     (loop for (kp1 . kp2) in matches
-          for kp-coord = (multiple-value-call #'sift/core:make-vec3
+          for kp-coord = (multiple-value-call #'sift/core:vec3
                            (sift/core:image-coordinate kp1) 1f0)
-          for expected-coord = (sift/core:mul-m3v3 m kp-coord)
-          for match-coord = (multiple-value-call #'sift/core:make-vec3
+          for expected-coord = (sift/core:mul-mv m kp-coord)
+          for match-coord = (multiple-value-call #'sift/core:vec3
                               (sift/core:image-coordinate kp2) 1f0)
           ;; This match is close enough to the expected position
-          when (< (sift/core:dist3 expected-coord match-coord) spatial-error) do
+          when (< (sift/core:dist expected-coord match-coord) spatial-error) do
           (incf correct))
     (cons correct (length matches))))
 

@@ -6,15 +6,15 @@
 (deftype mat (n) `(simple-array single-float (,n ,n)))
 (deftype vec (n) `(simple-array single-float (,n)))
 
-(declaim (inline make-vec3))
-(defun make-vec3 (x y z)
+(declaim (inline vec3))
+(defun vec3 (x y z)
   (make-array 3
               :element-type 'single-float
               :initial-contents (list x y z)))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (declaim (inline make-mat3))
-  (defun make-mat3 (a00 a01 a02 a10 a11 a12 a20 a21 a22)
+  (declaim (inline mat3))
+  (defun mat3 (a00 a01 a02 a10 a11 a12 a20 a21 a22)
     (make-array '(3 3)
                 :element-type 'single-float
                 :initial-contents (list (list a00 a01 a02)
@@ -22,74 +22,78 @@
                                         (list a20 a21 a22)))))
 
 (eval-when (:compile-toplevel :load-toplevel :execute)
-  (declaim (inline make-mat2))
-  (defun make-mat2 (a00 a01 a10 a11)
+  (declaim (inline mat2))
+  (defun mat2 (a00 a01 a10 a11)
     (make-array '(2 2)
                 :element-type 'single-float
                 :initial-contents (list (list a00 a01)
                                         (list a10 a11)))))
 
 (alex:define-constant +mat3-identity+
-    (make-mat3 1f0 0f0 0f0 0f0 1f0 0f0 0f0 0f0 1f0)
+    (mat3 1f0 0f0 0f0 0f0 1f0 0f0 0f0 0f0 1f0)
   :test #'equalp)
 
 (alex:define-constant +mat2-identity+
-    (make-mat2 1f0 0f0 0f0 1f0)
+    (mat2 1f0 0f0 0f0 1f0)
   :test #'equalp)
 
-;; Vector 3x1
+;; Vectors
 
-(sera:-> dist3 ((vec 3) (vec 3))
+(sera:-> dist ((vec *) (vec *))
          (values single-float &optional))
-(declaim (inline dist3))
-(defun dist3 (v1 v2)
+(declaim (inline dist))
+(defun dist (v1 v2)
+  (assert (= (length v1) (length v2)))
   (sqrt
-   (loop for i below 3 sum
+   (loop for i below (length v1) sum
          (expt (- (aref v1 i) (aref v2 i)) 2)
          single-float)))
 
-(sera:-> add3 ((vec 3) (vec 3))
-         (values (vec 3) &optional))
-(declaim (inline add3))
-(defun add3 (v1 v2)
-  (let ((result (make-array 3 :element-type 'single-float)))
+(sera:-> add ((vec *) (vec *))
+         (values (vec *) &optional))
+(declaim (inline add))
+(defun add (v1 v2)
+  (assert (= (length v1) (length v2)))
+  (let ((result (make-array (length v1) :element-type 'single-float)))
     (loop-array (result (i))
      (setf (aref result i)
            (+ (aref v1 i) (aref v2 i))))
     result))
 
-(sera:-> scalev3 ((vec 3) single-float)
-         (values (vec 3) &optional))
-(declaim (inline scalev3))
-(defun scalev3 (v s)
-  (let ((result (make-array 3 :element-type 'single-float)))
+(sera:-> scalev ((vec *) single-float)
+         (values (vec *) &optional))
+(declaim (inline scale))
+(defun scale (v s)
+  (let ((result (make-array (length v) :element-type 'single-float)))
     (loop-array (result (i))
      (setf (aref result i)
            (* (aref v i) s)))
     result))
 
-(sera:-> dot3 ((vec 3) (vec 3))
+(sera:-> dot ((vec *) (vec *))
          (values single-float &optional))
-(declaim (inline dot3))
-(defun dot3 (v1 v2)
+(declaim (inline dot))
+(defun dot (v1 v2)
+  (assert (= (length v1) (length v2)))
   (loop for x1 across v1
         for x2 across v2
         sum (* x1 x2) single-float))
 
-(sera:-> mul-m3v3 ((mat 3) (vec 3))
-         (values (vec 3) &optional))
-(declaim (inline mul-m3v3))
-(defun mul-m3v3 (m v)
-  (let ((result (make-array 3 :element-type 'single-float)))
+(sera:-> mul-mv ((mat *) (vec *))
+         (values (vec *) &optional))
+(declaim (inline mul-mv))
+(defun mul-mv (m v)
+  (assert (= (length v) (array-dimension m 1)))
+  (let ((result (make-array (length v) :element-type 'single-float)))
     (loop-array (result (i))
      (setf (aref result i)
-           (loop for k below 3 sum
+           (loop for k below (length v) sum
                  (* (aref m i k)
                     (aref v k))
                  single-float)))
     result))
 
-;; Matrix 3x3
+;; Matrices
 
 (sera:-> shrink3 ((mat 3))
          (values (mat 2) &optional))
@@ -97,21 +101,32 @@
 (defun shrink3 (m)
   "Remove the first row and column which are related to the scale
 level."
-  (make-mat2 (aref m 1 1) (aref m 1 2)
-             (aref m 2 1) (aref m 2 2)))
+  (mat2 (aref m 1 1) (aref m 1 2)
+        (aref m 2 1) (aref m 2 2)))
 
-(sera:-> mul3 ((mat 3) (mat 3))
-         (values (mat 3) &optional))
-(declaim (inline mul3))
-(defun mul3 (m1 m2)
-  (let ((result (make-array '(3 3) :element-type 'single-float)))
+(sera:-> mul ((mat *) (mat *))
+         (values (mat *) &optional))
+(declaim (inline mul))
+(defun mul (m1 m2)
+  (assert (= (array-dimension m1 1)
+             (array-dimension m2 0)))
+  (let ((result (make-array (list (array-dimension m1 0)
+                                  (array-dimension m2 1))
+                            :element-type 'single-float)))
     (loop-array (result (i j))
      (setf (aref result i j)
-           (loop for k below 3 sum
+           (loop for k below (array-dimension m1 1) sum
                  (* (aref m1 i k)
                     (aref m2 k j))
                  single-float)))
     result))
+
+(sera:-> mtrace ((mat *))
+         (values single-float &optional))
+(declaim (inline mtrace))
+(defun mtrace (m)
+  (loop for i below (array-dimension m 0)
+        sum (aref m i i) single-float))
 
 (sera:-> det3 ((mat 3))
          (values single-float &optional))
@@ -126,12 +141,6 @@ level."
     (+ (+ (* A (aref m 0 0)))
        (- (* B (aref m 0 1)))
        (+ (* C (aref m 0 2))))))
-
-(sera:-> trace3 ((mat 3))
-         (values single-float &optional))
-(declaim (inline trace3))
-(defun trace3 (m)
-  (+ (aref m 0 0) (aref m 1 1) (aref m 2 2)))
 
 (sera:-> inv3 ((mat 3))
          (values (mat 3) &optional))
@@ -158,27 +167,12 @@ level."
          (det (+ (* (aref m 0 0) A)
                  (* (aref m 0 1) D)
                  (* (aref m 0 2) G)))
-         (res (make-mat3 A B C D E F G H I)))
+         (res (mat3 A B C D E F G H I)))
     (loop for i below (array-total-size res) do
           (setf (row-major-aref res i)
                 (/ (row-major-aref res i) det)))
     res))
     
-;; Matrix 2x2
-
-(sera:-> mul2 ((mat 2) (mat 2))
-         (values (mat 2) &optional))
-(declaim (inline mul2))
-(defun mul2 (m1 m2)
-  (let ((result (make-array '(2 2) :element-type 'single-float)))
-    (loop-array (result (i j))
-     (setf (aref result i j)
-           (loop for k below 2 sum
-                 (* (aref m1 i k)
-                    (aref m2 k j))
-                 single-float)))
-    result))
-
 (sera:-> det2 ((mat 2))
          (values single-float &optional))
 (declaim (inline det2))
@@ -186,21 +180,15 @@ level."
   (- (* (aref m 0 0) (aref m 1 1))
      (* (aref m 1 0) (aref m 0 1))))
 
-(sera:-> trace2 ((mat 2))
-         (values single-float &optional))
-(declaim (inline trace2))
-(defun trace2 (m)
-  (+ (aref m 0 0) (aref m 1 1)))
-
 (sera:-> inv2 ((mat 2))
          (values (mat 2) &optional))
 (defun inv2 (m)
   (declare (optimize (speed 3)))
   (let ((det (det2 m))
-        (res (make-mat2 (+ (aref m 1 1))
-                        (- (aref m 0 1))
-                        (- (aref m 1 0))
-                        (+ (aref m 0 0)))))
+        (res (mat2 (+ (aref m 1 1))
+                   (- (aref m 0 1))
+                   (- (aref m 1 0))
+                   (+ (aref m 0 0)))))
     (loop for i below (array-total-size res) do
           (setf (row-major-aref res i)
                 (/ (row-major-aref res i) det)))

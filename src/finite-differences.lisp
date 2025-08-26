@@ -32,7 +32,7 @@
          (values (vec 3) &optional))
 (declaim (inline gradient))
 (defun gradient (f index)
-  (make-vec3
+  (vec3
    (derivative/1 f index +shift-x+)
    (derivative/1 f index +shift-y+)
    (derivative/1 f index +shift-z+)))
@@ -76,9 +76,9 @@
         (xy (derivative/2m f index +shift-x+ +shift-y+))
         (xz (derivative/2m f index +shift-x+ +shift-z+))
         (yz (derivative/2m f index +shift-y+ +shift-z+)))
-    (make-mat3 xx xy xz
-               xy yy yz
-               xz yz zz)))
+    (mat3 xx xy xz
+          xy yy yz
+          xz yz zz)))
 
 (declaim (inline hessian/array))
 (defun hessian/array (array index)

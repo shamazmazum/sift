@@ -24,7 +24,7 @@
 (defun add-coord (keypoint diff)
   (picolens:over #'kp-coord
                  (lambda (x)
-                   (add3 x diff))
+                   (add x diff))
                  keypoint))
 
 (sera:-> new-angle (keypoint (single-float 0f0 (#.(* 2 +pi+))))
@@ -51,4 +51,4 @@ image (scale level 0) as an augmented vector (3-component vector with
 the last element being equal to 1)."
   (multiple-value-bind (x y)
       (image-coordinate keypoint)
-    (make-vec3 x y 1f0)))
+    (vec3 x y 1f0)))

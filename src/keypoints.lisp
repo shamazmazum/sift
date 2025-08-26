@@ -2,9 +2,9 @@
 
 (declaim (inline make-coord-vector))
 (defun make-coord-vector (i j k)
-  (make-vec3 (float i 0f0)
-             (float j 0f0)
-             (float k 0f0)))
+  (vec3 (float i 0f0)
+        (float j 0f0)
+        (float k 0f0)))
 
 (sera:-> keypointp ((simple-array single-float (* * *))
                     alex:non-negative-fixnum
@@ -50,15 +50,15 @@
          ;; Adjust the coordinate
          (hessian  (hessian/array  dog index))
          (gradient (gradient/array dog index))
-         (diff (scalev3 (mul-m3v3 (inv3 hessian) gradient) -1f0)))
+         (diff (scalev (mul-mv (inv3 hessian) gradient) -1f0)))
     ;; Drop keypoints with enormous extremum correction
     (if (shift-ok-p diff)
         (let ((value (+ (aref-index3 dog index)
-                        (/ (dot3 gradient diff) 2))))
+                        (/ (dot gradient diff) 2))))
           ;; Discard a keypoint with low contrast
           (if (> (abs value) 3f-2)
               (let* ((subhessian (shrink3 hessian))
-                     (trace (trace2 subhessian))
+                     (trace (mtrace subhessian))
                      (det (det2 subhessian))
                      (r 10f0))
                 (declare (dynamic-extent subhessian))
