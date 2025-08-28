@@ -9,6 +9,7 @@
   :components ((:file "package")
                (:file "util")
                (:file "linalg")
+               (:file "solver")
                (:file "gaussian-blur")
                (:file "downsample")
                (:file "scale-space")
@@ -20,6 +21,7 @@
                (:file "keypoints")
                (:file "matching"))
   :depends-on (:cl-fftw/single
+               :cffi
                :serapeum
                :alexandria
                :float-features

@@ -30,9 +30,6 @@
          @item(LAPACK (liblapack.so))
          @item(A C compiler (cc))
       @end(list)
-      If you do not want image registration stuff and need pure SIFT
-      descriptors, you may load @c(sift/core) instead of @c(sift) which does not
-      require BLAS and LAPACK.
    @end(section)
 
    @begin(section)
