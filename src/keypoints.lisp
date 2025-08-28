@@ -73,10 +73,10 @@
            ;; Adjust the coordinate
            (hessian  (hessian  dog index))
            (gradient (gradient dog index))
-           (diff (scalev (solve hessian gradient) -1f0)))
+           (diff (solve hessian gradient)))
       ;; Drop keypoints with enormous extremum correction
-      (if (shift-ok-p diff)
-          (let ((value (+ (aref-index3 dog index)
+      (if (and diff (shift-ok-p diff))
+          (let ((value (- (aref-index3 dog index)
                           (/ (dot gradient diff) 2))))
             ;; Discard a keypoint with low contrast
             (if (> (abs value) 3f-2)
@@ -89,7 +89,7 @@
                   ;; curvatures or negative determinant of Hessian.
                   (if (and (> det 0)
                            (< (/ (expt trace 2) det) (/ (expt (1+ r) 2) r)))
-                      (add-coord keypoint diff)))))))))
+                      (sub-coord keypoint diff)))))))))
 
 (sera:-> detect-keypoints/octave ((simple-array single-float (* * *))
                                   (simple-array single-float (*))

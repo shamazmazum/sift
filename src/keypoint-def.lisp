@@ -18,13 +18,13 @@
   (keypoint-σ      kp-σ)
   (keypoint-angle  kp-angle))
 
-(sera:-> add-coord (keypoint (vec 3))
+(sera:-> sub-coord (keypoint (vec 3))
          (values keypoint &optional))
-(declaim (inline add-coord))
-(defun add-coord (keypoint diff)
+(declaim (inline sub-coord))
+(defun sub-coord (keypoint diff)
   (picolens:over #'kp-coord
                  (lambda (x)
-                   (add x diff))
+                   (sub x diff))
                  keypoint))
 
 (sera:-> new-angle (keypoint (single-float 0f0 (#.(* 2 +pi+))))
