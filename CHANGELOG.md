@@ -1,5 +1,13 @@
 # Changelog
 
+## Version 0.3
+
+* Improvement: Drop keypoints which lie close to the image border. Do not
+  calculate `mod` when accessing arrays.
+* Improvement: Faster gradinent interpolation
+* Improvement: Use LAPACK to calculate A^-1*b (a matrix inverse multiplied by a
+  vector).
+
 ## Version 0.2
 
 * Incompatible change: The system `sift` is renamed to `sift/core` and

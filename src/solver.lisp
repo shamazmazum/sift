@@ -17,7 +17,8 @@
 
 #+sbcl
 (sb-c:defknown solve ((mat *) (vec *)) (or (vec *) null)
-    (sb-c:movable sb-c:flushable))
+    (sb-c:movable sb-c:flushable)
+  :overwrite-fndb-silently t)
 
 #+sbcl
 (sb-c:defoptimizer (solve sb-c:derive-type) ((m v))
