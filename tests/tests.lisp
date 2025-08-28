@@ -9,7 +9,7 @@
                    (let ((status (run suite)))
                      (explain! status)
                      (results-status status)))
-                 '(linalg3 linalg2 interp descr regis))))
+                 '(linalg interp descr regis))))
 
 (defun mat3-rand ()
   (sift/core:mat3
@@ -63,52 +63,18 @@
                                  :type "npy"
                                  :directory '(:relative "tests")))))
 
-(def-suite linalg3 :description "Linear algebra tests (3x3 matrices)")
-(def-suite linalg2 :description "Linear algebra tests (2x2 matrices)")
-(def-suite interp  :description "Linear interpolation")
-(def-suite descr   :description "SIFT keypoint descriptors")
-(def-suite regis   :description "Image registration with SIFT descriptors")
+(def-suite linalg :description "Linear algebra tests")
+(def-suite interp :description "Linear interpolation")
+(def-suite descr  :description "SIFT keypoint descriptors")
+(def-suite regis  :description "Image registration with SIFT descriptors")
 
-(in-suite linalg3)
+(in-suite linalg)
 
 (test mul-identity3
   (loop repeat 3000
         for m = (mat3-rand) do
         (is (approx:array-approx-p m (sift/core:mul m sift/core:+mat3-identity+)))
         (is (approx:array-approx-p m (sift/core:mul sift/core:+mat3-identity+ m)))))
-
-(test determinant3
-  (loop repeat 3000
-        for m1 = (mat3-rand)
-        for m2 = (mat3-rand)
-        when (> (sift/core:det3 (sift/core:mul m2 m1)) 1f-3) do
-        (is (approx:approxp
-             (* (sift/core:det3 m1) (sift/core:det3 m2))
-             (sift/core:det3 (sift/core:mul m1 m2))))
-        (is (approx:approxp
-             (* (sift/core:det3 m1) (sift/core:det3 m2))
-             (sift/core:det3 (sift/core:mul m2 m1))))))
-
-(test trace3
-  (loop repeat 3000
-        for m1 = (mat3-rand)
-        for m2 = (unitary3-rand)
-        do
-        (is (approx:approxp
-             (sift/core:mtrace m1)
-             (sift/core:mtrace
-              (sift/core:mul m2 (sift/core:mul m1 (sift/core:inv3 m2))))))))
-
-(test inversion3
-  (loop repeat 3000
-        for m = (mat3-rand)
-        when (> (sift/core:det3 m) 1f-3) do
-        (is (approx:array-approx-p
-             sift/core:+mat3-identity+ (sift/core:mul m (sift/core:inv3 m))))
-        (is (approx:array-approx-p
-             sift/core:+mat3-identity+ (sift/core:mul (sift/core:inv3 m) m)))))
-
-(in-suite linalg2)
 
 (test mul-identity2
   (loop repeat 3000
@@ -127,25 +93,6 @@
         (is (approx:approxp
              (* (sift/core:det2 m1) (sift/core:det2 m2))
              (sift/core:det2 (sift/core:mul m2 m1))))))
-
-(test trace2
-  (loop repeat 3000
-        for m1 = (mat2-rand)
-        for m2 = (unitary2-rand)
-        do
-        (is (approx:approxp
-             (sift/core:mtrace m1)
-             (sift/core:mtrace
-              (sift/core:mul m2 (sift/core:mul m1 (sift/core:inv2 m2))))))))
-
-(test inversion2
-  (loop repeat 3000
-        for m = (mat2-rand)
-        when (> (sift/core:det2 m) 1f-3) do
-        (is (approx:array-approx-p
-             sift/core:+mat2-identity+ (sift/core:mul m (sift/core:inv2 m))))
-        (is (approx:array-approx-p
-             sift/core:+mat2-identity+ (sift/core:mul (sift/core:inv2 m) m)))))
 
 (in-suite interp)
 

@@ -19,12 +19,11 @@
            #:keypoint-index
            #:keypoint-coord
 
-           #:index3 #:index3-i #:index3-j #:index3-k
-           #:aref-index3 #:aref-index3/p
+           #:index3 #:index3-i #:index3-j #:index3-k #:aref-index3
            #:vec #:mat
-           #:vec3 #:mat3 #:mat2 #:shrink3 #:dist #:mul-mv
+           #:vec3 #:mat3 #:mat2 #:dist #:mul-mv
            #:mul #:mtrace #:scale
-           #:det3 #:inv3 #:det2 #:inv2
+           #:det2 #:shrink3
            #:+mat3-identity+ #:+mat2-identity+
 
            #:loop-array
