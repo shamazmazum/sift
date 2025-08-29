@@ -9,7 +9,7 @@
                    (let ((status (run suite)))
                      (explain! status)
                      (results-status status)))
-                 '(linalg interp descr regis))))
+                 '(linalg descr regis))))
 
 (defun mat3-rand ()
   (sift/core:mat3
@@ -43,15 +43,6 @@
   (let ((ϕ (random (* 2 +pi+))))
     (sift/core:mat2 (cos ϕ) (- (sin ϕ)) (sin ϕ) (cos ϕ))))
 
-(defun linear-function (x y z)
-  (+ (* 10 x) (* 4 y) (* 6 z) 34))
-
-(defun %linear-function (index)
-  (linear-function
-   (float (sift/core:index3-i index) 0f0)
-   (float (sift/core:index3-j index) 0f0)
-   (float (sift/core:index3-k index) 0f0)))
-
 ;; Neumann, Rodrigo, ANDREETA, MARIANE, Lucas-Oliveira, Everton. "11
 ;; Sandstones: raw, filtered and segmented data." Digital Rocks
 ;; Portal, Digital Rocks Portal, 21 Apr 2025,
@@ -64,7 +55,6 @@
                                  :directory '(:relative "tests")))))
 
 (def-suite linalg :description "Linear algebra tests")
-(def-suite interp :description "Linear interpolation")
 (def-suite descr  :description "SIFT keypoint descriptors")
 (def-suite regis  :description "Image registration with SIFT descriptors")
 
@@ -93,17 +83,6 @@
         (is (approx:approxp
              (* (sift/core:det2 m1) (sift/core:det2 m2))
              (sift/core:det2 (sift/core:mul m2 m1))))))
-
-(in-suite interp)
-
-(test interp
-  (loop repeat 100
-        for x = (random 10f0)
-        for y = (random 10f0)
-        for z = (random 10f0) do
-        (is (approx:approxp
-             (linear-function x y z)
-             (sift/core:interpolate #'%linear-function x y z)))))
 
 (in-suite descr)
 

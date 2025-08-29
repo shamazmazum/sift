@@ -75,3 +75,13 @@
     specs
     :from-end t
     :initial-value body)))
+
+;; Nearest neighbor interpolation
+
+(deftype scalar-field () '(sera:-> (index3) (values single-float &optional)))
+
+(sera:-> interpolate (scalar-field single-float single-float single-float)
+         (values single-float &optional))
+(declaim (inline interpolate))
+(defun interpolate (f x y z)
+  (funcall f (index3 (round x) (round y) (round z))))

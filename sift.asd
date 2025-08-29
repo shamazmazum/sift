@@ -15,7 +15,6 @@
                (:file "scale-space")
                (:file "keypoint-def")
                (:file "finite-differences")
-               (:file "interpolation")
                (:file "orientation")
                (:file "descriptor")
                (:file "keypoints")
