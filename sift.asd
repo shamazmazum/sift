@@ -60,7 +60,6 @@
   :depends-on (:sift/core
                :sift/debug
                :sift/registration)
-  
   :in-order-to ((test-op (load-op "sift/tests")))
   :perform (test-op (op system)
                     (declare (ignore op system))
