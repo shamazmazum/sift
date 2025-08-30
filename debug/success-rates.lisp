@@ -1,12 +1,13 @@
 (in-package :sift/debug)
 
-(sera:-> myaref ((simple-array * (* *)) sift/core:index3)
-         (values t &optional))
+(sera:-> myaref ((simple-array single-float (* *)) sift/core:index3)
+         (values single-float &optional))
 (declaim (inline myaref))
 (defun myaref (array index)
-  (aref array
-        (mod (sift/core:index3-j index) (array-dimension array 0))
-        (mod (sift/core:index3-k index) (array-dimension array 1))))
+  (let ((j (sift/core:index3-j index))
+        (k (sift/core:index3-k index)))
+    (if (array-in-bounds-p array j k)
+        (aref array j k) 0.0)))
 
 (sera:-> rotate-array ((simple-array single-float (* *))
                        (single-float 0.0 #.(/ sift/core::+pi+ 2)))
