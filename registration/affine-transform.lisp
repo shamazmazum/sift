@@ -93,10 +93,11 @@ without repetitions."
                      alex:positive-fixnum
                      alex:positive-fixnum
                      (single-float 0f0))
-         (values (or magicl:matrix/single-float null) &optional))
+         (values (or magicl:matrix/single-float null) single-float &optional))
 (defun ransac-fit (xs ys n k d err)
   (labels ((%go (best-fit best-err n)
-             (if (zerop n) best-fit
+             (if (zerop n)
+                 (values best-fit best-err)
                  (multiple-value-bind (successp fit err)
                      (ransac-iteration xs ys k d err)
                    (if (and successp (< err best-err))
@@ -119,7 +120,7 @@ without repetitions."
                                 (:seed-points alex:positive-fixnum)
                                 (:well-fit    alex:positive-fixnum)
                                 (:err         (single-float 0f0)))
-         (values (or (sift/core:mat 3) null) &optional))
+         (values (sift/core:mat 3) single-float &optional))
 (defun affine-transform (matches &key (max-iter 10) (seed-points 10) (well-fit 50) (err 1f0))
   "Find an affine transform matrix which transform the first keypoint
 in each pair of matches to the second keypoint. Keypoint parameters
@@ -128,7 +129,8 @@ number of iterations, @c(SEED-POINTS) is an initial number of points
 to make a fit, @c(WELL-FIT) is a number of well fit points needed to
 treat a fit as successful. A point is well-fit if \\(\\| y - Ax \\|\\)
 is less than @c(ERR), (\\(A\\) is a candidate for the found fit)."
-  (let ((m (multiple-value-bind (xs ys)
-               (matches->matrices matches)
-             (ransac-fit xs ys max-iter seed-points well-fit err))))
-    (if m (matrix->array (magicl:transpose m)))))
+  (multiple-value-bind (fit error)
+      (multiple-value-bind (xs ys)
+          (matches->matrices matches)
+        (ransac-fit xs ys max-iter seed-points well-fit err))
+    (values (if fit (matrix->array (magicl:transpose fit))) error)))

@@ -135,5 +135,6 @@
         for ys2 = (magicl:scale (magicl:rand '(20 3) :type 'single-float) 10000)
         for xs = (magicl:vstack (list xs1 xs2))
         for ys = (magicl:vstack (list ys1 ys2))
-        for fit = (sift/registration:ransac-fit xs ys 30 10 50 1f0) do
+        for fit = (sift/registration:ransac-fit xs ys 30 10 50 1f0)
+        when fit do
         (is (approx:array-approx-p (magicl::storage m) (magicl::storage fit)))))
