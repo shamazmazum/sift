@@ -48,6 +48,7 @@
   :pathname "registration"
   :serial t
   :components ((:file "package")
+               (:file "magicl")
                (:file "affine-transform"))
   :depends-on (:sift/core :magicl))
 

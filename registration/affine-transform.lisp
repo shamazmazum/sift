@@ -37,7 +37,7 @@
 (defun fit-error (βs xs ys)
   (let ((diff (magicl:.- ys (magicl:@ xs βs))))
     (flet ((norm (column)
-             (magicl:norm (magicl:column diff column))))
+             (magicl:norm (column diff column))))
       (max (norm 0)
            (norm 1)
            (norm 2)))))
@@ -52,16 +52,6 @@ without repetitions."
                        (%go acc k)
                        (%go (cons x acc) (1- k)))))))
     (%go nil k)))
-
-(sera:-> select-rows (magicl:matrix/single-float list)
-         (values magicl:matrix/single-float &optional))
-(defun select-rows (m is)
-  (magicl:vstack
-   (mapcar
-    (lambda (idx)
-      (magicl:vector->row-matrix
-       (magicl:row m idx)))
-    is)))
 
 ;; One iteration of RANSAC fit
 ;; https://en.wikipedia.org/wiki/Random_sample_consensus
@@ -81,9 +71,9 @@ without repetitions."
          (βs (least-squares-fit %xs %ys)))
     (multiple-value-bind (n xs ys)
         (loop for i below length
-              for xrow = (magicl:vector->row-matrix (magicl:row xs i))
-              for yrow = (magicl:vector->row-matrix (magicl:row ys i))
-              for yfit = (magicl:@ xrow βs)
+              for xrow = (row xs i)
+              for yrow = (row ys i)
+              for yfit = (magicl:mult xrow βs)
               for pair-err = (magicl:norm (magicl:.- yrow yfit))
               when (< pair-err err)
               collect xrow into fit-x-rows and
@@ -92,7 +82,7 @@ without repetitions."
               finally (when (not (zerop n))
                         (return
                           (values
-                           n (magicl:vstack fit-x-rows) (magicl:vstack fit-y-rows)))))
+                           n (vstack fit-x-rows) (vstack fit-y-rows)))))
       (when (and n (>= n d))
         (let ((βs (least-squares-fit xs ys)))
           (values t βs (fit-error βs xs ys)))))))
