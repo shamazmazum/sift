@@ -120,7 +120,7 @@ without repetitions."
                                 (:seed-points alex:positive-fixnum)
                                 (:well-fit    alex:positive-fixnum)
                                 (:err         (single-float 0f0)))
-         (values (sift/core:mat 3) single-float &optional))
+         (values (or null (sift/core:mat 3)) single-float &optional))
 (defun affine-transform (matches &key (max-iter 10) (seed-points 10) (well-fit 50) (err 1f0))
   "Find an affine transform matrix which transform the first keypoint
 in each pair of matches to the second keypoint. Keypoint parameters
