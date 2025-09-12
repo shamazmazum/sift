@@ -1,6 +1,6 @@
 (defsystem :sift/core
   :name :sift/core
-  :version "0.3"
+  :version "0.4"
   :author "Vasily Postnicov <shamaz.mazum@gmail.com>"
   :description "Scale-invariant image keypoints with descriptors"
   :licence "2-clause BSD"
@@ -28,7 +28,7 @@
 
 (defsystem :sift/util
   :name :sift/util
-  :version "0.3"
+  :version "0.4"
   :author "Vasily Postnicov <shamaz.mazum@gmail.com>"
   :licence "2-clause BSD"
   :pathname "util"
@@ -43,7 +43,7 @@
 
 (defsystem :sift/registration
   :name :sift/registration
-  :version "0.3"
+  :version "0.4"
   :author "Vasily Postnicov <shamaz.mazum@gmail.com>"
   :licence "2-clause BSD"
   :pathname "registration"
@@ -55,7 +55,7 @@
 
 (defsystem :sift
   :name :sift
-  :version "0.3"
+  :version "0.4"
   :author "Vasily Postnicov <shamaz.mazum@gmail.com>"
   :licence "2-clause BSD"
   :depends-on (:sift/core
@@ -68,7 +68,7 @@
 
 (defsystem :sift/tests
   :name :sift/tests
-  :version "0.3"
+  :version "0.4"
   :author "Vasily Postnicov <shamaz.mazum@gmail.com>"
   :licence "2-clause BSD"
   :pathname "tests"

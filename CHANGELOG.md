@@ -1,5 +1,18 @@
 # Changelog
 
+## Version 0.4
+
+* Incompatible change: `sift/debug` system and package were renamed to
+  `sift/util`.
+* Improvement: A new function `enhance-contrast` which enhances contrast of an
+  image for better keypoint detection. This function implements the simpliest
+  histogram equalization algorithm.
+* Improvement: `affine-transform` returns sum of the least squares as the second
+  value.
+* Improvement: Nearest neighbors approximation is used for computation of
+  orientation and descriptors. This is much faster as bilinear approximation,
+  but produces the same number of correctly matched keypoints.
+
 ## Version 0.3
 
 * Improvement: Drop keypoints which lie close to the image border. Do not
