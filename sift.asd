@@ -37,6 +37,7 @@
                (:file "draw-keypoints")
                (:file "draw-matches")
                (:file "image-io")
+               (:file "contrast")
                (:file "success-rates"))
   :depends-on (:sift/core :imago :array-operations))
 

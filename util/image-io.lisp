@@ -9,18 +9,6 @@
     (imago:rgb-image       #'imago:color-intensity)
     (imago:grayscale-image #'imago:gray-intensity)))
 
-(sera:-> load-image ((or string pathname))
-         (values (simple-array single-float (* *)) &optional))
-(defun load-image (name)
-  "Load an image as an array of single float values in the range [0,
-1]. If the image is in color, only pixel intensity matters."
-  (let* ((image (imago:read-image name))
-         (intensity (pixel-intensity image))
-         (pixels (imago:image-pixels image)))
-    (aops:vectorize* 'single-float
-        (pixels)
-      (/ (funcall intensity pixels) 255f0))))
-
 (sera:-> write-image ((simple-array single-float (* *)) (or string pathname))
          (values &optional))
 (defun write-image (data name)
@@ -34,3 +22,45 @@ image."
      (imago:make-grayscale-image-from-pixels pixels)
      name)
     (values)))
+
+#+sbcl
+(sb-c:defknown load-image ((or string pathname) &optional boolean)
+    (or (simple-array single-float (* *))
+        (simple-array sera:octet   (* *)))
+    (sb-c:any)
+  :overwrite-fndb-silently t)
+
+#-sbcl
+(sera:-> load-image ((or string pathname) &optional boolean)
+         (values (or (simple-array single-float (* *))
+                     (simple-array sera:octet   (* *)))
+                 &optional))
+(defun load-image (name &optional normalize)
+  "Load an image as an array of intensities of type @c((unsigned-byte
+8)) (if @c(normalize) is @c(nil)) or @c(single-float) values in the
+range \\([0, 1]\\) (if @c(normalize) is @c(t))."
+  (let* ((image (imago:read-image name))
+         (intensity (pixel-intensity image))
+         (pixels (imago:image-pixels image)))
+    (if normalize
+        (aops:vectorize* 'single-float
+            (pixels)
+          (/ (funcall intensity pixels) 255f0))
+        (aops:vectorize* 'sera:octet
+            (pixels)
+          (funcall intensity pixels)))))
+
+#+sbcl
+(sb-c:defoptimizer (load-image sb-c:derive-type) ((name &optional normalize))
+  (let ((normalized   (sb-kernel:specifier-type '(simple-array single-float (* *))))
+        (unnormalized (sb-kernel:specifier-type '(simple-array sera:octet   (* *))))
+        (constantp (and normalize (sb-c:constant-lvar-p normalize))))
+    (cond
+      ((and constantp
+            (eq (sb-c::constant-value (sb-c::lvar-constant normalize)) t))
+       normalized)
+      ((and constantp
+            (eq (sb-c::constant-value (sb-c::lvar-constant normalize)) nil))
+       unnormalized)
+      ((not normalize)  ; Optional argument not given
+       unnormalized)))) ; Fall through: give up

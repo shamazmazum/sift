@@ -3,6 +3,8 @@
   (:local-nicknames (#:sera #:serapeum))
   (:export #:load-image
            #:write-image
+           #:enhance-contrast
+
            #:draw-keypoints
            #:draw-matches
 
