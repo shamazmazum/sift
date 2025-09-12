@@ -7,16 +7,16 @@
    @begin(section)
       @title(An example)
       @begin[lang=lisp](code)
-(let* ((data1 (sift/debug:load-image "img.png"))
+(let* ((data1 (sift/util:load-image "img.png"))
        ;; Scale and rotate the image
-       (data2 (sift/debug:rotate-array (sift/debug:scale-array data1 1.4 1.4) 3f-1))
+       (data2 (sift/util:rotate-array (sift/util:scale-array data1 1.4 1.4) 3f-1))
        ;; Calculate keypoints and descriptors
        (kp1 (sift/core:descriptors (sift/core:gaussian-scale-space data1)))
        (kp2 (sift/core:descriptors (sift/core:gaussian-scale-space data2)))
        ;; Find matches
        (matches (sift/core:find-matches kp1 kp2)))
   ;; Draw matches using imago
-  (sift/debug:draw-matches data1 data2 matches))
+  (sift/util:draw-matches data1 data2 matches))
       @end(code)
       @image[src="matches.png"]()
    @end(section)
@@ -69,8 +69,8 @@
       )
    @end(section)
    @begin(section)
-      @title(Package @c(sift/debug))
-      @cl:with-package[name="sift/debug"](
+      @title(Package @c(sift/util))
+      @cl:with-package[name="sift/util"](
          @cl:doc(function draw-keypoints)
          @cl:doc(function draw-matches)
          @cl:doc(function load-image)

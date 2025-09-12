@@ -1,4 +1,4 @@
-(in-package :sift/debug)
+(in-package :sift/util)
 
 (defun adjust-coordinates (keypoint)
   (multiple-value-bind (x y)

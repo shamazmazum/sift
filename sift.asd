@@ -26,12 +26,12 @@
                :float-features
                :picolens))
 
-(defsystem :sift/debug
-  :name :sift/debug
+(defsystem :sift/util
+  :name :sift/util
   :version "0.3"
   :author "Vasily Postnicov <shamaz.mazum@gmail.com>"
   :licence "2-clause BSD"
-  :pathname "debug"
+  :pathname "util"
   :serial t
   :components ((:file "package")
                (:file "draw-keypoints")
@@ -58,7 +58,7 @@
   :author "Vasily Postnicov <shamaz.mazum@gmail.com>"
   :licence "2-clause BSD"
   :depends-on (:sift/core
-               :sift/debug
+               :sift/util
                :sift/registration)
   :in-order-to ((test-op (load-op "sift/tests")))
   :perform (test-op (op system)

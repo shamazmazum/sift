@@ -1,4 +1,4 @@
-(in-package :sift/debug)
+(in-package :sift/util)
 
 (sera:-> draw-matches ((simple-array single-float (* *))
                        (simple-array single-float (* *))

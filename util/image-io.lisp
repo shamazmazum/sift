@@ -1,4 +1,4 @@
-(in-package :sift/debug)
+(in-package :sift/util)
 
 (sera:-> pixel-intensity (imago:image)
          (values (sera:-> ((unsigned-byte 32))

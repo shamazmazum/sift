@@ -87,7 +87,7 @@
 (in-suite descr)
 
 (defun test-matches (a1 a2 m)
-  (let* ((rates (sift/debug:success-rates a1 a2 m))
+  (let* ((rates (sift/util:success-rates a1 a2 m))
          (nsucc (car rates))
          (rsucc (/ (car rates) (cdr rates))))
     (is (> nsucc 500))
@@ -99,8 +99,8 @@
         for slice = (select:select *slices* (random (array-dimension *slices* 0))
                                    (select:range 0 1000) (select:range 0 1000))
         for s = (1+ (random 2f0))
-        for slice2 = (sift/debug:scale-array slice s s)
-        for m = (sift/debug:scale-transform s) sum
+        for slice2 = (sift/util:scale-array slice s s)
+        for m = (sift/util:scale-transform s) sum
         (test-matches slice slice2 m)))
 
 (test descriptor-matching/rotation
@@ -108,8 +108,8 @@
         for slice = (select:select *slices* (random (array-dimension *slices* 0))
                                    (select:range 0 1000) (select:range 0 1000))
         for ϕ = (random (/ +pi+ 2))
-        for slice2 = (sift/debug:rotate-array slice ϕ)
-        for m = (sift/debug:rotation-transform 1000 ϕ) sum
+        for slice2 = (sift/util:rotate-array slice ϕ)
+        for m = (sift/util:rotation-transform 1000 ϕ) sum
         (test-matches slice slice2 m)))
 
 (test descriptor-matching/combined
@@ -118,9 +118,9 @@
                                    (select:range 0 1000) (select:range 0 1000))
         for s = (1+ (random 2f0))
         for ϕ = (random (/ +pi+ 2))
-        for slice2 = (sift/debug:rotate-array (sift/debug:scale-array slice s s) ϕ)
-        for m1 = (sift/debug:scale-transform s)
-        for m2 = (sift/debug:rotation-transform (* s 1000) ϕ)
+        for slice2 = (sift/util:rotate-array (sift/util:scale-array slice s s) ϕ)
+        for m1 = (sift/util:scale-transform s)
+        for m2 = (sift/util:rotation-transform (* s 1000) ϕ)
         for m = (sift/core:mul m2 m1) sum
         (test-matches slice slice2 m)))
 

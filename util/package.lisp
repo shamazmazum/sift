@@ -1,4 +1,4 @@
-(defpackage sift/debug
+(defpackage sift/util
   (:use #:cl)
   (:local-nicknames (#:sera #:serapeum))
   (:export #:load-image

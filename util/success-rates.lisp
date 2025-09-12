@@ -1,4 +1,4 @@
-(in-package :sift/debug)
+(in-package :sift/util)
 
 (sera:-> myaref ((simple-array single-float (* *)) sift/core:index3)
          (values single-float &optional))
