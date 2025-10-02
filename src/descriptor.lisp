@@ -77,36 +77,31 @@ space."
               (rotated (mul-mv m neighbor))
               (coord (add (keypoint-coord keypoint) rotated)))
          (declare (dynamic-extent neighbor rotated coord))
-         (multiple-value-bind (bin-i wi)
-             (idx->bin i)
-           (declare (type fixnum bin-i))
-           (multiple-value-bind (bin-j wj)
-               (idx->bin j)
-             (declare (type fixnum bin-j))
-             (multiple-value-bind (kp-angle norm)
-                 (evaluate-neighbor gaussian coord)
-               (multiple-value-bind (bin-o bin-o+1 wo)
-                   (angle->bins (- kp-angle angle) 8)
-                 (let ((v (* norm (gaussian (* σ 4) neighbor))))
-                   ;; Here is this "trilinear interpolation" which means that we
-                   ;; distribute V between 8 bins (a combination of two bins for each
-                   ;; dimension: two space dimensions and the angle).
-                   (incf-descr! bin-i bin-j bin-o
-                                (* v wi wj wo))
-                   (incf-descr! bin-i bin-j bin-o+1
-                                (* v wi wj (- 1 wo)))
-                   (incf-descr! bin-i (1+ bin-j) bin-o
-                                (* v wi (- 1 wj) wo))
-                   (incf-descr! bin-i (1+ bin-j) bin-o+1
-                                (* v wi (- 1 wj) (- 1 wo)))
-                   (incf-descr! (1+ bin-i) bin-j bin-o
-                                (* v (- 1 wi) wj wo))
-                   (incf-descr! (1+ bin-i) bin-j bin-o+1
-                                (* v (- 1 wi) wj (- 1 wo)))
-                   (incf-descr! (1+ bin-i) (1+ bin-j) bin-o
-                                (* v (- 1 wi) (- 1 wj) wo))
-                   (incf-descr! (1+ bin-i) (1+ bin-j) bin-o+1
-                                (* v (- 1 wi) (- 1 wj) (- 1 wo)))))))))))
+         (rmvb (((bin-i wi) (idx->bin i))
+                ((bin-j wj) (idx->bin j))
+                ((kp-angle norm) (evaluate-neighbor gaussian coord))
+                ((bin-o bin-o+1 wo) (angle->bins (- kp-angle angle) 8)))
+           (declare (type fixnum bin-i bin-j))
+           (let ((v (* norm (gaussian (* σ 4) neighbor))))
+             ;; Here is this "trilinear interpolation" which means that we
+             ;; distribute V between 8 bins (a combination of two bins for each
+             ;; dimension: two space dimensions and the angle).
+             (incf-descr! bin-i bin-j bin-o
+                          (* v wi wj wo))
+             (incf-descr! bin-i bin-j bin-o+1
+                          (* v wi wj (- 1 wo)))
+             (incf-descr! bin-i (1+ bin-j) bin-o
+                          (* v wi (- 1 wj) wo))
+             (incf-descr! bin-i (1+ bin-j) bin-o+1
+                          (* v wi (- 1 wj) (- 1 wo)))
+             (incf-descr! (1+ bin-i) bin-j bin-o
+                          (* v (- 1 wi) wj wo))
+             (incf-descr! (1+ bin-i) bin-j bin-o+1
+                          (* v (- 1 wi) wj (- 1 wo)))
+             (incf-descr! (1+ bin-i) (1+ bin-j) bin-o
+                          (* v (- 1 wi) (- 1 wj) wo))
+             (incf-descr! (1+ bin-i) (1+ bin-j) bin-o+1
+                          (* v (- 1 wi) (- 1 wj) (- 1 wo))))))))
     (descriptor-postprocess!
      (flatten-descriptor descriptor))))
 
