@@ -8,7 +8,7 @@
 point."
   (declare (optimize (speed 3)))
   (labels ((derivative (direction)
-             (interpolate
+             (interpolate/nn
               (lambda (index)
                 (derivative/1 array index direction))
               (aref coord 0)

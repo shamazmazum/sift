@@ -1,13 +1,11 @@
 (in-package :sift/util)
 
-(sera:-> myaref ((simple-array single-float (* *)) sift/core:index3)
+(sera:-> myaref ((simple-array single-float (* *)) fixnum fixnum)
          (values single-float &optional))
 (declaim (inline myaref))
-(defun myaref (array index)
-  (let ((j (sift/core:index3-j index))
-        (k (sift/core:index3-k index)))
-    (if (array-in-bounds-p array j k)
-        (aref array j k) 0.0)))
+(defun myaref (array i j)
+  (if (array-in-bounds-p array i j)
+      (aref array i j) 0.0))
 
 (sera:-> rotate-array ((simple-array single-float (* *))
                        (single-float 0.0 #.(/ sift/core::+pi+ 2)))
@@ -33,10 +31,10 @@
         (setf (aref result i j)
               (if (and (< 0 x s)
                        (< 0 y s))
-                  (sift/core:interpolate
-                   (lambda (idx)
-                     (myaref array idx))
-                   0f0 x y)
+                  (interpolate/linear
+                   (lambda (i j)
+                     (myaref array i j))
+                   x y 1 1)
                   0f0))))
   result))
 
@@ -54,10 +52,10 @@
     (sift/core:loop-array (result (i j))
       (let ((x (/ i s1))
             (y (/ j s2)))
-        (flet ((get-data (idx)
-                 (myaref array idx)))
+        (flet ((get-data (i j)
+                 (myaref array i j)))
           (setf (aref result i j)
-                (sift/core:interpolate #'get-data 0f0 x y)))))
+                (interpolate/linear #'get-data x y 1 1)))))
     result))
 
 (sera:-> add-noise ((simple-array single-float (* *)))

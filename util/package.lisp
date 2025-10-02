@@ -1,6 +1,7 @@
 (defpackage sift/util
   (:use #:cl)
-  (:local-nicknames (#:sera #:serapeum))
+  (:local-nicknames (#:sera #:serapeum)
+                    (#:alex #:alexandria))
   (:export #:load-image
            #:write-image
            #:enhance-contrast

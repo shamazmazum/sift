@@ -76,12 +76,26 @@
     :from-end t
     :initial-value body)))
 
+;; Really multiple value bind
+(defmacro rmvb (forms &body body)
+  (car
+   (reduce
+    (lambda (form acc)
+      (destructuring-bind (variables expression)
+          form
+        `((multiple-value-bind ,variables
+              ,expression
+            ,@acc))))
+    forms
+    :from-end t
+    :initial-value body)))
+
 ;; Nearest neighbor interpolation
 
 (deftype scalar-field () '(sera:-> (index3) (values single-float &optional)))
 
-(sera:-> interpolate (scalar-field single-float single-float single-float)
+(sera:-> interpolate/nn (scalar-field single-float single-float single-float)
          (values single-float &optional))
-(declaim (inline interpolate))
-(defun interpolate (f x y z)
+(declaim (inline interpolate/nn))
+(defun interpolate/nn (f x y z)
   (funcall f (index3 (round x) (round y) (round z))))
