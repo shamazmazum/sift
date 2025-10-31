@@ -23,7 +23,7 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt update
-          sudo apt install libfftw3-dev build-essential libblas3-dev liblapack3-dev
+          sudo apt install libfftw3-dev build-essential libblas-dev liblapack-dev
       - name: Install roswell
         run: |
           curl -L https://raw.githubusercontent.com/roswell/roswell/master/scripts/install-for-ci.sh | sh
