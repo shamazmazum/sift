@@ -76,22 +76,7 @@
     :from-end t
     :initial-value body)))
 
-;; Really multiple value bind
-(defmacro rmvb (forms &body body)
-  (car
-   (reduce
-    (lambda (form acc)
-      (destructuring-bind (variables expression)
-          form
-        `((multiple-value-bind ,variables
-              ,expression
-            ,@acc))))
-    forms
-    :from-end t
-    :initial-value body)))
-
 ;; Nearest neighbor interpolation
-
 (deftype scalar-field () '(sera:-> (index3) (values single-float &optional)))
 
 (sera:-> interpolate/nn (scalar-field single-float single-float single-float)

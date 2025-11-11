@@ -17,9 +17,9 @@
   "Interpolate F in the point (X/DIVISOR-X, Y/DIVISOR-Y)."
   (let ((divisor-x (float divisor-x))
         (divisor-y (float divisor-y)))
-    (sift/core:rmvb (((qi ri) (floor x divisor-x))
-                     ((qj rj) (floor y divisor-y)))
-            ;; For code formatting
+    (sera:mvlet ((qi ri (floor x divisor-x))
+                 (qj rj (floor y divisor-y)))
+      ;; For code formatting
       (flet ((id (x) x))
         (declare (inline id))
         (let* ((ri (/ ri divisor-x))

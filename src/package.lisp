@@ -28,6 +28,5 @@
 
            #:loop-array
            #:loop-ranges
-           #:rmvb
 
            #:interpolate))
