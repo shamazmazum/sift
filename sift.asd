@@ -9,7 +9,6 @@
   :components ((:file "package")
                (:file "util")
                (:file "linalg")
-               (:file "solver")
                (:file "gaussian-blur")
                (:file "downsample")
                (:file "scale-space")
@@ -24,7 +23,8 @@
                :serapeum
                :alexandria
                :float-features
-               :picolens))
+               :picolens
+               :entzauberte-matrices))
 
 (defsystem :sift/util
   :name :sift/util
@@ -51,7 +51,7 @@
   :serial t
   :components ((:file "package")
                (:file "affine-transform"))
-  :depends-on (:sift/core :entzauberte-matrices))
+  :depends-on (:sift/core))
 
 (defsystem :sift
   :name :sift

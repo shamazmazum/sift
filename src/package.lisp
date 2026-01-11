@@ -2,6 +2,7 @@
   (:use #:cl)
   (:local-nicknames (#:alex #:alexandria)
                     (#:sera #:serapeum)
+                    (#:em   #:entzauberte-matrices)
                     (#:ff   #:float-features))
   (:export #:gaussian-scale-space
            #:keypoints

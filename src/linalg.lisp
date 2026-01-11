@@ -135,3 +135,10 @@ level."
 (defun det2 (m)
   (- (* (aref m 0 0) (aref m 1 1))
      (* (aref m 1 0) (aref m 0 1))))
+
+(declaim (inline solve))
+(defun solve (a b)
+  (let ((length (length b)))
+    (em:reshape
+     (em:solve a (em:reshape-unsafe b (list length 1)))
+     (list length))))
