@@ -126,15 +126,22 @@
 
 (in-suite regis)
 
+(declaim (inline random-matrix))
+(defun random-matrix (m n)
+  (let ((result (make-array (list m n) :element-type 'single-float)))
+    (loop for i below (array-total-size result) do
+      (setf (row-major-aref result i) (random 1.0)))
+    result))
+
 (test ransac
   (loop repeat 500
-        for xs1 = (magicl:scale (magicl:rand '(1000 3) :type 'single-float) 100)
-        for m  = (magicl:rand '(3 3) :type 'single-float)
-        for ys1 = (magicl:@ xs1 m)
-        for xs2 = (magicl:scale (magicl:rand '(20 3) :type 'single-float) 10000)
-        for ys2 = (magicl:scale (magicl:rand '(20 3) :type 'single-float) 10000)
-        for xs = (magicl:vstack (list xs1 xs2))
-        for ys = (magicl:vstack (list ys1 ys2))
+        for xs1 = (em:scale (random-matrix 1000 3) 100.0)
+        for m   = (random-matrix 3 3)
+        for ys1 = (em:mult xs1 m)
+        for xs2 = (em:scale (random-matrix 20 3) 10000.0)
+        for ys2 = (em:scale (random-matrix 20 3) 10000.0)
+        for xs = (em:vstack (list xs1 xs2) 'single-float)
+        for ys = (em:vstack (list ys1 ys2) 'single-float)
         for fit = (sift/registration:ransac-fit xs ys 30 10 50 1f0)
         when fit do
-        (is (approx:array-approx-p (magicl::storage m) (magicl::storage fit)))))
+        (is (approx:array-approx-p m fit))))
