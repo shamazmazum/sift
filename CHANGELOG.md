@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.5.1
+
+This is a bugfix release.
+
 ## Version 0.5
 
 * Improvement: Use CLAHE contrast enhancement algorithm
