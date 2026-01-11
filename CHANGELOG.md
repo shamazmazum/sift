@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 0.5
+
+* Improvement: Use CLAHE contrast enhancement algorithm
+* Improvement: Use entzauberte-matrices instead of MAGICL.
+
 ## Version 0.4
 
 * Incompatible change: `sift/debug` system and package were renamed to

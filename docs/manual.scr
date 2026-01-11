@@ -26,8 +26,7 @@
       The system @c(sift) depends on a few C libraries. You need these:
       @begin(list)
          @item(fftw3f (FFTW for single precision floats).)
-         @item(BLAS (libblas.so))
-         @item(LAPACK (liblapack.so))
+         @item(OpenBLAS)
          @item(A C compiler (cc))
       @end(list)
    @end(section)
