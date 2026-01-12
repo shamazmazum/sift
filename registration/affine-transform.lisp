@@ -8,7 +8,7 @@
          (result (make-array (list (length is) cols)
                              :element-type 'single-float)))
     (loop for row in is
-          for i from 0 by 1 do
+          for i fixnum from 0 by 1 do
             (loop for j below cols do
               (setf (aref result i j)
                     (aref m row j))))
@@ -45,9 +45,11 @@
                             (simple-array single-float (* 3)))
          (values (sift/core:mat 3) &optional))
 (defun least-squares-fit (xs ys)
-  (em:solve
-   (em:mult xs xs :ta t)
-   (em:mult xs ys :ta t)))
+  ;; FIXME: Check for an error
+  (nth-value
+   0 (em:solve
+      (em:mult xs xs :ta t)
+      (em:mult xs ys :ta t))))
 
 (sera:-> fit-error ((sift/core:mat 3)
                     (simple-array single-float (* 3))
@@ -90,8 +92,8 @@ without repetitions."
          (βs (least-squares-fit %xs %ys)))
     (multiple-value-bind (n xs ys)
         (loop for i below length
-              for xrow = (em:reshape (em:row xs i) '(1 3))
-              for yrow = (em:reshape (em:row ys i) '(1 3))
+              for xrow = (em:vector->row (em:row xs i))
+              for yrow = (em:vector->row (em:row ys i))
               for yfit = (em:mult xrow βs)
               for pair-err = (em:norm (em:row (em:sub yrow yfit) 0))
               when (< pair-err err)

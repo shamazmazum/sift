@@ -138,7 +138,5 @@ level."
 
 (declaim (inline solve))
 (defun solve (a b)
-  (let ((length (length b)))
-    (em:reshape
-     (em:solve a (em:reshape-unsafe b (list length 1)))
-     (list length))))
+  (em:column
+   (em:solve a (em:vector->column b)) 0))
