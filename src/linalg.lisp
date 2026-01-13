@@ -138,5 +138,5 @@ level."
 
 (declaim (inline solve))
 (defun solve (a b)
-  (em:column
-   (em:solve a (em:vector->column b)) 0))
+  (let ((solution (em:solve a (em:vector->column b))))
+    (if solution (em:column solution 0))))
