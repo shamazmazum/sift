@@ -4,5 +4,7 @@
                     (#:alex #:alexandria)
                     (#:ff   #:float-features)
                     (#:em   #:entzauberte-matrices))
-  (:export #:affine-transform
+  (:export #:least-squares
+           #:fit-model
+           ;; For tests
            #:ransac))
