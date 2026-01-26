@@ -80,8 +80,6 @@ without repetitions."
 
 ;; One iteration of RANSAC fit
 ;; https://en.wikipedia.org/wiki/Random_sample_consensus
-;; K — number of points for initial fit
-;; D — number of points needed to be fit with the model to treat the model as good.
 (sera:-> ransac-iteration (fitfn
                            (simple-array single-float (* 3))
                            (simple-array single-float (* 3))
