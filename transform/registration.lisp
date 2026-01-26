@@ -62,11 +62,10 @@
          (values single-float &optional))
 (defun fit-error (βs xs ys)
   (let ((diff (em:sub ys (em:mult xs βs))))
-    (flet ((norm (column)
-             (em:norm (em:column diff column))))
-      (max (norm 0)
-           (norm 1)
-           (norm 2)))))
+    (sqrt
+     (loop for i below (array-total-size diff)
+           sum (expt (row-major-aref diff i) 2)
+           single-float))))
 
 (defun random-integers (k n)
   "Collect K random integer from 0 (inclusive) to N (exclusive)
