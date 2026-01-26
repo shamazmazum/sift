@@ -108,16 +108,16 @@ without repetitions."
         (let ((βs (least-squares-fit xs ys)))
           (values t βs (fit-error βs xs ys)))))))
 
-(sera:-> ransac-fit ((simple-array single-float (* 3))
-                     (simple-array single-float (* 3))
-                     alex:positive-fixnum
-                     alex:positive-fixnum
-                     alex:positive-fixnum
-                     (single-float 0f0))
+(sera:-> ransac ((simple-array single-float (* 3))
+                 (simple-array single-float (* 3))
+                 alex:positive-fixnum
+                 alex:positive-fixnum
+                 alex:positive-fixnum
+                 (single-float 0f0))
          (values (or (sift/core:mat 3) null)
                  single-float
                  &optional))
-(defun ransac-fit (xs ys n k d err)
+(defun ransac (xs ys n k d err)
   (labels ((%go (best-fit best-err n)
              (if (zerop n)
                  (values best-fit best-err)
@@ -145,5 +145,5 @@ is less than @c(ERR), (\\(A\\) is a candidate for the found fit)."
   (multiple-value-bind (fit error)
       (multiple-value-bind (xs ys)
           (matches->matrices matches)
-        (ransac-fit xs ys max-iter seed-points well-fit err))
+        (ransac xs ys max-iter seed-points well-fit err))
     (values (if fit (em:transpose fit)) error)))

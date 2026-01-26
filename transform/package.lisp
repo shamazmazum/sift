@@ -5,4 +5,4 @@
                     (#:ff   #:float-features)
                     (#:em   #:entzauberte-matrices))
   (:export #:affine-transform
-           #:ransac-fit))
+           #:ransac))
