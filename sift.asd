@@ -42,15 +42,15 @@
                (:file "success-rates"))
   :depends-on (:sift/core :imago :array-operations))
 
-(defsystem :sift/registration
-  :name :sift/registration
+(defsystem :sift/transform
+  :name :sift/transform
   :version "0.5.1"
   :author "Vasily Postnicov <shamaz.mazum@gmail.com>"
   :licence "2-clause BSD"
-  :pathname "registration"
+  :pathname "transform"
   :serial t
   :components ((:file "package")
-               (:file "affine-transform"))
+               (:file "registration"))
   :depends-on (:sift/core))
 
 (defsystem :sift
@@ -60,7 +60,7 @@
   :licence "2-clause BSD"
   :depends-on (:sift/core
                :sift/util
-               :sift/registration)
+               :sift/transform)
   :in-order-to ((test-op (load-op "sift/tests")))
   :perform (test-op (op system)
                     (declare (ignore op system))

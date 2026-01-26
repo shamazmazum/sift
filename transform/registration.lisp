@@ -1,4 +1,4 @@
-(in-package :sift/registration)
+(in-package :sift/transform)
 
 (sera:-> select-rows ((simple-array single-float (* *)) list)
          (values (simple-array single-float (* *)) &optional))

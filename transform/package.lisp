@@ -1,4 +1,4 @@
-(defpackage sift/registration
+(defpackage sift/transform
   (:use #:cl)
   (:local-nicknames (#:sera #:serapeum)
                     (#:alex #:alexandria)
