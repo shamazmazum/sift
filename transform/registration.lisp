@@ -87,10 +87,14 @@ without repetitions."
                            (simple-array single-float (* 3))
                            (simple-array single-float (* 3))
                            alex:positive-fixnum
-                           alex:positive-fixnum
+                           alex:non-negative-fixnum
+                           (single-float 0f0)
                            (single-float 0f0))
-         (values boolean &optional (sift/core:mat 3) single-float))
-(defun ransac-iteration (f xs ys k d err)
+         (values boolean &optional
+                 (sift/core:mat 3)
+                 (single-float 0f0)
+                 alex:non-negative-fixnum))
+(defun ransac-iteration (f xs ys k prev-inliers ε prev-error)
   (let* ((length (array-dimension xs 0))
          (is (random-integers k length))
          (%xs (select-rows xs is))
@@ -101,8 +105,8 @@ without repetitions."
               for xrow = (em:vector->row (em:row xs i))
               for yrow = (em:vector->row (em:row ys i))
               for yfit = (em:mult xrow βs)
-              for pair-err = (em:norm (em:row (em:sub yrow yfit) 0))
-              when (< pair-err err)
+              for pair-ε = (em:norm (em:row (em:sub yrow yfit) 0))
+              when (< pair-ε ε)
               collect xrow into fit-x-rows and
               collect yrow into fit-y-rows and
               sum 1 into n
@@ -111,49 +115,52 @@ without repetitions."
                           (values n
                                   (em:vstack fit-x-rows 'single-float)
                                   (em:vstack fit-y-rows 'single-float)))))
-      (when (and n (>= n d))
-        (let ((βs (funcall f xs ys)))
-          (values t βs (fit-error βs xs ys)))))))
+      (when (and n (>= n prev-inliers))
+        (let* ((βs (funcall f xs ys))
+               (fit-error (fit-error βs xs ys)))
+          (if (or (> n prev-inliers)
+                  (> fit-error prev-error))
+              (values t βs (fit-error βs xs ys) n)))))))
 
 (sera:-> ransac (fitfn
                  (simple-array single-float (* 3))
                  (simple-array single-float (* 3))
                  alex:positive-fixnum
                  alex:positive-fixnum
-                 alex:positive-fixnum
                  (single-float 0f0))
          (values (or (sift/core:mat 3) null)
-                 single-float
-                 &optional))
-(defun ransac (f xs ys n k d err)
-  (labels ((%go (best-fit best-err n)
+                 single-float alex:non-negative-fixnum &optional))
+(defun ransac (f xs ys n k err)
+  (assert (= (array-dimension xs 0)
+             (array-dimension ys 0)))
+  (labels ((%go (best-fit best-err best-inliers n)
              (if (zerop n)
-                 (values best-fit best-err)
-                 (multiple-value-bind (successp fit err)
-                     (ransac-iteration f xs ys k d err)
-                   (if (and successp (< err best-err))
-                       (%go fit err (1- n))
-                       (%go best-fit best-err (1- n)))))))
-    (%go nil ff:single-float-positive-infinity n)))
+                 (values (em:transpose best-fit) best-err best-inliers)
+                 (multiple-value-bind (successp fit err inliers)
+                     (ransac-iteration f xs ys k best-inliers err best-err)
+                   (let ((n (1- n)))
+                     (if successp
+                         (%go fit err inliers n)
+                         (%go best-fit best-err best-inliers n)))))))
+    (let ((initial-error ff:single-float-positive-infinity))
+      (if (< (array-dimension xs 0) k)
+          (values nil initial-error 0)
+          (%go    nil initial-error 0 n)))))
 
 (sera:-> fit-model (fitfn list &key
                     (:max-iter    alex:positive-fixnum)
                     (:seed-points alex:positive-fixnum)
-                    (:well-fit    alex:positive-fixnum)
                     (:err         (single-float 0f0)))
-         (values (or null (sift/core:mat 3)) single-float &optional))
-(defun fit-model (f matches &key (max-iter 10) (seed-points 10) (well-fit 50) (err 1f0))
+         (values (or (sift/core:mat 3) null)
+                 single-float alex:non-negative-fixnum &optional))
+(defun fit-model (f matches &key (max-iter 10) (seed-points 10) (err 1f0))
   "Find a linear fit which maps the first keypoint in each pair of
 matches to the second keypoint. The function @c(F) determines the type
 of fit (e.g. unconstrained, rigid, rigid + uniform scale). Keypoint
 parameters are related to the RANSAC algorithm: @c(MAX-ITER) is the
 maximal number of iterations, @c(SEED-POINTS) is an initial number of
-points to make a fit, @c(WELL-FIT) is a number of well fit points
-needed to treat a fit as successful. A point is well-fit if \\(\\| y -
-Ax \\|\\) is less than @c(ERR), (\\(A\\) is a candidate for the found
-fit)."
-  (multiple-value-bind (fit error)
-      (multiple-value-bind (xs ys)
-          (matches->matrices matches)
-        (ransac f xs ys max-iter seed-points well-fit err))
-    (values (if fit (em:transpose fit)) error)))
+points to make a fit. A point is well-fit if \\(\\| y - Ax \\|\\) is
+less than @c(ERR), (\\(A\\) is a candidate for the found fit)."
+  (multiple-value-bind (xs ys)
+      (matches->matrices matches)
+    (ransac f xs ys max-iter seed-points err)))

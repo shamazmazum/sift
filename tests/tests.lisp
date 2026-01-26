@@ -143,6 +143,6 @@
         for xs = (em:vstack (list xs1 xs2) 'single-float)
         for ys = (em:vstack (list ys1 ys2) 'single-float)
         for fit = (sift/transform:ransac #'sift/transform:least-squares
-                                         xs ys 30 10 50 1f0)
+                                         xs ys 100 10 1f0)
         when fit do
-        (is (approx:array-approx-p m fit))))
+        (is (approx:array-approx-p m (em:transpose fit)))))
