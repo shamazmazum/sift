@@ -145,12 +145,12 @@ without repetitions."
           (%go    nil initial-error 0 n)))))
 
 (sera:-> fit-model (fitfn list &key
-                    (:max-iter    alex:positive-fixnum)
+                    (:iterations  alex:positive-fixnum)
                     (:seed-points alex:positive-fixnum)
                     (:err         (single-float 0f0)))
          (values (or (sift/core:mat 3) null)
                  single-float alex:non-negative-fixnum &optional))
-(defun fit-model (f matches &key (max-iter 10) (seed-points 10) (err 1f0))
+(defun fit-model (f matches &key (iterations 2000) (seed-points 10) (err 10f0))
   "Find a linear fit which maps the first keypoint in each pair of
 matches to the second keypoint. The function @c(F) determines the type
 of fit (e.g. unconstrained, rigid, rigid + uniform scale). Keypoint
@@ -160,4 +160,4 @@ points to make a fit. A point is well-fit if \\(\\| y - Ax \\|\\) is
 less than @c(ERR), (\\(A\\) is a candidate for the found fit)."
   (multiple-value-bind (xs ys)
       (matches->matrices matches)
-    (ransac f xs ys max-iter seed-points err)))
+    (ransac f xs ys iterations seed-points err)))
