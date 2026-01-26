@@ -44,7 +44,7 @@
 
 (defsystem :sift/registration
   :name :sift/registration
-  :version "0.4"
+  :version "0.5.1"
   :author "Vasily Postnicov <shamaz.mazum@gmail.com>"
   :licence "2-clause BSD"
   :pathname "registration"
