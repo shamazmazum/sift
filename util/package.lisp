@@ -13,6 +13,7 @@
            #:rotate-array
            #:scale-transform
            #:rotation-transform
+           #:interpolate/linear
 
            #:success-rates
            #:success-rates-scaling

@@ -50,8 +50,9 @@
   :pathname "transform"
   :serial t
   :components ((:file "package")
+               (:file "application")
                (:file "registration"))
-  :depends-on (:sift/core))
+  :depends-on (:sift/core :sift/util))
 
 (defsystem :sift
   :name :sift

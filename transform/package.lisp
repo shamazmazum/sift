@@ -6,5 +6,6 @@
                     (#:em   #:entzauberte-matrices))
   (:export #:least-squares
            #:fit-model
+           #:apply-transform
            ;; For tests
            #:ransac))

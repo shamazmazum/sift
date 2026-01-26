@@ -61,6 +61,7 @@
                     (simple-array single-float (* 3)))
          (values single-float &optional))
 (defun fit-error (βs xs ys)
+  (declare (optimize (speed 3)))
   (let ((diff (em:sub ys (em:mult xs βs))))
     (sqrt
      (loop for i below (array-total-size diff)
