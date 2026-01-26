@@ -45,11 +45,10 @@
                             (simple-array single-float (* 3)))
          (values (sift/core:mat 3) &optional))
 (defun least-squares-fit (xs ys)
-  ;; FIXME: Check for an error
-  (nth-value
-   0 (em:solve
-      (em:mult xs xs :ta t)
-      (em:mult xs ys :ta t))))
+  (let ((fit (em:solve
+              (em:mult xs xs :ta t)
+              (em:mult xs ys :ta t))))
+    (if fit fit sift/core:+mat3-identity+)))
 
 (sera:-> fit-error ((sift/core:mat 3)
                     (simple-array single-float (* 3))
