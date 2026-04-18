@@ -78,9 +78,11 @@
       )
    @end(section)
    @begin(section)
-      @title(Package @c(sift/registration))
-      @cl:with-package[name="sift/registration"](
-         @cl:doc(function affine-transform)      
+      @title(Package @c(sift/transform))
+      @cl:with-package[name="sift/transform"](
+         @cl:doc(function fit-model)
+         @cl:doc(function least-squares)
+         @cl:doc(function apply-transform)
       )
    @end(section)
 @end(section)
