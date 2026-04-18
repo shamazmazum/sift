@@ -117,7 +117,7 @@ without repetitions."
         (let* ((βs (funcall f xs ys))
                (fit-error (fit-error βs xs ys)))
           (if (or (> n prev-inliers)
-                  (> fit-error prev-error))
+                  (< fit-error prev-error))
               (values t βs (fit-error βs xs ys) n)))))))
 
 ;; TODO: Remove this later
