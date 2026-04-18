@@ -145,4 +145,4 @@
         for fit = (sift/transform:ransac #'sift/transform:least-squares
                                          xs ys 100 10 1f0)
         when fit do
-        (is (approx:array-approx-p m (em:transpose fit)))))
+        (is (approx:array-approx-p m (sift/transform::transpose fit)))))

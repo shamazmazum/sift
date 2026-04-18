@@ -120,6 +120,7 @@ without repetitions."
                   (> fit-error prev-error))
               (values t βs (fit-error βs xs ys) n)))))))
 
+;; TODO: Remove this later
 (sera:-> transpose ((sift/core:mat 3))
          (values (sift/core:mat 3) &optional))
 (defun transpose (m)
