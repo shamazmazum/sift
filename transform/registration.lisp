@@ -120,6 +120,16 @@ without repetitions."
                   (> fit-error prev-error))
               (values t βs (fit-error βs xs ys) n)))))))
 
+(sera:-> transpose ((sift/core:mat 3))
+         (values (sift/core:mat 3) &optional))
+(defun transpose (m)
+  (declare (optimize (speed 3)))
+  (let ((result (make-array '(3 3) :element-type 'single-float)))
+    (loop for i below (array-dimension result 0) do
+      (loop for j below (array-dimension result 1) do
+        (setf (aref result i j) (aref m j i))))
+    result))
+
 (sera:-> ransac (fitfn
                  (simple-array single-float (* 3))
                  (simple-array single-float (* 3))
@@ -133,7 +143,7 @@ without repetitions."
              (array-dimension ys 0)))
   (labels ((%go (best-fit best-err best-inliers n)
              (if (zerop n)
-                 (values (em:transpose best-fit) best-err best-inliers)
+                 (values (transpose best-fit) best-err best-inliers)
                  (multiple-value-bind (successp fit err inliers)
                      (ransac-iteration f xs ys k best-inliers err best-err)
                    (let ((n (1- n)))

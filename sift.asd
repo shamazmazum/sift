@@ -69,7 +69,6 @@
 
 (defsystem :sift/tests
   :name :sift/tests
-  :version "0.5.1"
   :author "Vasily Postnicov <shamaz.mazum@gmail.com>"
   :licence "2-clause BSD"
   :pathname "tests"
@@ -81,3 +80,10 @@
                :fiveam
                :numpy-npy
                :approx))
+
+;; For qlot
+(defsystem :sift/docs
+  :name :sift/docs
+  :author "Vasily Postnicov <shamaz.mazum@gmail.com>"
+  :licence "2-clause BSD"
+  :depends-on (:sift :codex))

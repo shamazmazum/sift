@@ -1,0 +1,14 @@
+github shamazmazum/cl-fftw :tag v0.2
+github shamazmazum/picolens :tag v0.2
+ql serapeum
+ql alexandria
+ql float-features
+github shamazmazum/entzauberte-matrices :tag v0.3
+ql array-operations
+ultralisp tokenrove-imago
+ql select
+ql fiveam
+ultralisp shamazmazum-numpy-npy
+ultralisp shamazmazum-approx
+github shamazmazum/codex
+github shamazmazum/docparser

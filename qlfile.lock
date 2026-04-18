@@ -1,0 +1,60 @@
+("quicklisp" .
+ (:class qlot/source/dist:source-dist
+  :initargs (:distribution "https://beta.quicklisp.org/dist/quicklisp.txt" :%version :latest)
+  :version "2026-01-01"))
+("cl-fftw" .
+ (:class qlot/source/github:source-github
+  :initargs (:repos "shamazmazum/cl-fftw" :ref nil :branch nil :tag "v0.2")
+  :version "github-779ee0f5141c4a0dd43c12419ec90592743cffa4"))
+("picolens" .
+ (:class qlot/source/github:source-github
+  :initargs (:repos "shamazmazum/picolens" :ref nil :branch nil :tag "v0.2")
+  :version "github-8a9b4912e9783cd9900d040c20075a28890f0400"))
+("serapeum" .
+ (:class qlot/source/ql:source-ql
+  :initargs (:%version :latest)
+  :version "ql-2026-01-01"))
+("alexandria" .
+ (:class qlot/source/ql:source-ql
+  :initargs (:%version :latest)
+  :version "ql-2024-10-12"))
+("float-features" .
+ (:class qlot/source/ql:source-ql
+  :initargs (:%version :latest)
+  :version "ql-2026-01-01"))
+("entzauberte-matrices" .
+ (:class qlot/source/github:source-github
+  :initargs (:repos "shamazmazum/entzauberte-matrices" :ref nil :branch nil :tag "v0.3")
+  :version "github-33fa9324e6b9ea141eb2e6ad20087fa3a599df41"))
+("array-operations" .
+ (:class qlot/source/ql:source-ql
+  :initargs (:%version :latest)
+  :version "ql-2023-10-21"))
+("tokenrove-imago" .
+ (:class qlot/source/ultralisp:source-ultralisp
+  :initargs (:%version :latest)
+  :version "ultralisp-20260418054501"))
+("select" .
+ (:class qlot/source/ql:source-ql
+  :initargs (:%version :latest)
+  :version "ql-2024-10-12"))
+("fiveam" .
+ (:class qlot/source/ql:source-ql
+  :initargs (:%version :latest)
+  :version "ql-2024-10-12"))
+("shamazmazum-numpy-npy" .
+ (:class qlot/source/ultralisp:source-ultralisp
+  :initargs (:%version :latest)
+  :version "ultralisp-20260418054501"))
+("shamazmazum-approx" .
+ (:class qlot/source/ultralisp:source-ultralisp
+  :initargs (:%version :latest)
+  :version "ultralisp-20260418054501"))
+("codex" .
+ (:class qlot/source/github:source-github
+  :initargs (:repos "shamazmazum/codex" :ref nil :branch nil :tag nil)
+  :version "github-67a554ffb78cc6f050ffc4d38a97777ed836db7e"))
+("docparser" .
+ (:class qlot/source/github:source-github
+  :initargs (:repos "shamazmazum/docparser" :ref nil :branch nil :tag nil)
+  :version "github-93a327d9e1c990fc6ec13251ffae119f3c168053"))
