@@ -82,8 +82,12 @@
                :approx))
 
 ;; For qlot
-(defsystem :sift/docs
-  :name :sift/docs
+(defsystem :sift/full
+  :name :sift/full
   :author "Vasily Postnicov <shamaz.mazum@gmail.com>"
   :licence "2-clause BSD"
-  :depends-on (:sift :codex))
+  :depends-on (:sift
+               :codex
+               :imago/libheif
+               :imago/libtiff
+               :imago/jpeg-turbo))
