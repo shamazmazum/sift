@@ -5,10 +5,13 @@ ql alexandria
 ql float-features
 github shamazmazum/entzauberte-matrices :tag v0.3
 ql array-operations
-ultralisp tokenrove-imago
 ql select
 ql fiveam
-ultralisp shamazmazum-numpy-npy
-ultralisp shamazmazum-approx
 github shamazmazum/codex
 github shamazmazum/docparser
+github shamazmazum/approx
+github shamazmazum/numpy-npy :tag v0.4
+github tokenrove/imago
+github shamazmazum/jpeg-turbo :tag v1.1
+github shamazmazum/cl-libheif :tag v1.1.0
+github shamazmazum/cl-libtiff :tag v0.1

@@ -30,10 +30,6 @@
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
   :version "ql-2023-10-21"))
-("tokenrove-imago" .
- (:class qlot/source/ultralisp:source-ultralisp
-  :initargs (:%version :latest)
-  :version "ultralisp-20260418054501"))
 ("select" .
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
@@ -42,14 +38,6 @@
  (:class qlot/source/ql:source-ql
   :initargs (:%version :latest)
   :version "ql-2024-10-12"))
-("shamazmazum-numpy-npy" .
- (:class qlot/source/ultralisp:source-ultralisp
-  :initargs (:%version :latest)
-  :version "ultralisp-20260418054501"))
-("shamazmazum-approx" .
- (:class qlot/source/ultralisp:source-ultralisp
-  :initargs (:%version :latest)
-  :version "ultralisp-20260418054501"))
 ("codex" .
  (:class qlot/source/github:source-github
   :initargs (:repos "shamazmazum/codex" :ref nil :branch nil :tag nil)
@@ -58,3 +46,27 @@
  (:class qlot/source/github:source-github
   :initargs (:repos "shamazmazum/docparser" :ref nil :branch nil :tag nil)
   :version "github-93a327d9e1c990fc6ec13251ffae119f3c168053"))
+("approx" .
+ (:class qlot/source/github:source-github
+  :initargs (:repos "shamazmazum/approx" :ref nil :branch nil :tag nil)
+  :version "github-fc8eee714d39c9a1cf69139cd9232b67b3c992e7"))
+("numpy-npy" .
+ (:class qlot/source/github:source-github
+  :initargs (:repos "shamazmazum/numpy-npy" :ref nil :branch nil :tag "v0.4")
+  :version "github-da5790d8378825c8b4b9213ef62da5bdf61aaf58"))
+("imago" .
+ (:class qlot/source/github:source-github
+  :initargs (:repos "tokenrove/imago" :ref nil :branch nil :tag nil)
+  :version "github-b1f50c1192f78dacbaaf60923d341f7c2ee38e92"))
+("jpeg-turbo" .
+ (:class qlot/source/github:source-github
+  :initargs (:repos "shamazmazum/jpeg-turbo" :ref nil :branch nil :tag "v1.1")
+  :version "github-fa6154446dc63db58c9950182ac8f440740ddd9d"))
+("cl-libheif" .
+ (:class qlot/source/github:source-github
+  :initargs (:repos "shamazmazum/cl-libheif" :ref nil :branch nil :tag "v1.1.0")
+  :version "github-3f74c17b7313eeb179eefe87ffd00bcf54a53751"))
+("cl-libtiff" .
+ (:class qlot/source/github:source-github
+  :initargs (:repos "shamazmazum/cl-libtiff" :ref nil :branch nil :tag "v0.1")
+  :version "github-14587dbb916dc4dad4e68bc66e4b5844b011d693"))
