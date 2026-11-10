@@ -51,30 +51,28 @@
 
 ;; Useful macros for iteration which supersede nested loops
 (defmacro loop-array ((array indices) &body body)
-  (car
-   (reduce
-    (lambda (entry acc)
-      (destructuring-bind (d . idx)
-          entry
-        `((loop for ,idx below (array-dimension ,array ,d) do
-                ,@acc))))
-    (loop for idx in indices
-          for d from 0 by 1
-          collect (cons d idx))
-    :from-end t
-    :initial-value body)))
+  (reduce
+   (lambda (entry acc)
+     (destructuring-bind (d . idx)
+         entry
+       `(loop for ,idx below (array-dimension ,array ,d) do
+              ,acc)))
+   (loop for idx in indices
+         for d from 0 by 1
+         collect (cons d idx))
+   :from-end t
+   :initial-value `(progn ,@body)))
 
 (defmacro loop-ranges (specs &body body)
-  (car
-   (reduce
-    (lambda (spec acc)
-      (destructuring-bind (idx start end)
-          spec
-        `((loop for ,idx fixnum from ,start below ,end do
-                ,@acc))))
-    specs
-    :from-end t
-    :initial-value body)))
+  (reduce
+   (lambda (spec acc)
+     (destructuring-bind (idx start end)
+         spec
+       `(loop for ,idx fixnum from ,start below ,end do
+              ,acc)))
+   specs
+   :from-end t
+   :initial-value `(progn ,@body)))
 
 ;; Nearest neighbor interpolation
 (deftype scalar-field () '(sera:-> (index3) (values single-float &optional)))
