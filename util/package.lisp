@@ -2,8 +2,7 @@
   (:use #:cl)
   (:local-nicknames (#:sera #:serapeum)
                     (#:alex #:alexandria))
-  (:export #:load-image
-           #:write-image
+  (:export #:image-intensities
            #:enhance-contrast
 
            #:draw-keypoints

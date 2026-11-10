@@ -7,16 +7,18 @@
    @begin(section)
       @title(An example)
       @begin[lang=lisp](code)
-(let* ((data1 (sift/util:load-image "img.png"))
-       ;; Scale and rotate the image
-       (data2 (sift/util:rotate-array (sift/util:scale-array data1 1.4 1.4) 3f-1))
+(let* ((img1 (imago:read-image "img1.png"))
+       (img2 (imago:read-image "img2.png"))
+       ;; Perform contrast enhancement
+       (data1 (sift/util:enhance-contrast (sift/util:image-intensities img1)))
+       (data2 (sift/util:enhance-contrast (sift/util:image-intensities img2)))
        ;; Calculate keypoints and descriptors
        (kp1 (sift/core:descriptors (sift/core:gaussian-scale-space data1)))
        (kp2 (sift/core:descriptors (sift/core:gaussian-scale-space data2)))
        ;; Find matches
        (matches (sift/core:find-matches kp1 kp2)))
   ;; Draw matches using imago
-  (sift/util:draw-matches data1 data2 matches))
+  (sift/util:draw-matches img1 img2 matches))
       @end(code)
       @image[src="matches.png"]()
    @end(section)
@@ -72,8 +74,7 @@
       @cl:with-package[name="sift/util"](
          @cl:doc(function draw-keypoints)
          @cl:doc(function draw-matches)
-         @cl:doc(function load-image)
-         @cl:doc(function write-image)
+         @cl:doc(function image-intensities)
          @cl:doc(function enhance-contrast)
       )
    @end(section)
