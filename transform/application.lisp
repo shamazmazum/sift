@@ -9,23 +9,25 @@
         (y (+ (* (aref m 1 0) x) (* (aref m 1 1) y) (aref m 1 2))))
     (values x y)))
 
-(serapeum:-> apply-transform ((simple-array single-float (* *)) (sift/core:mat 3) &key
-                              (:background single-float)
+(serapeum:-> apply-transform ((simple-array (unsigned-byte 8) (* *)) (sift/core:mat 3) &key
+                              (:background (unsigned-byte 8))
                               (:shape      list))
-             (values (simple-array single-float (* *)) &optional))
-(defun apply-transform (array m &key (shape (array-dimensions array)) (background 0.0))
+             (values (simple-array (unsigned-byte 8) (* *)) &optional))
+(defun apply-transform (array m &key (shape (array-dimensions array)) (background 0))
   "Apply affine transform @c(m) (in the form of 3x3 matrix) to an
 image. The result has the shape @c(shape)."
   (declare (optimize (speed 3)))
-  (let ((result (make-array shape :element-type 'single-float)))
+  (let ((result (make-array shape :element-type '(unsigned-byte 8))))
     (sift/core:loop-array (result (i j))
       (multiple-value-bind (x y)
           (apply-transform-point m (float i) (float j))
         (setf (aref result i j)
-              (sift/util:interpolate/linear
-               (lambda (i j)
-                 (if (array-in-bounds-p array i j)
-                     (aref array i j)
-                     background))
-                x y 1 1))))
+              (round
+               (sift/util:interpolate/linear
+                (lambda (i j)
+                  (float
+                   (if (array-in-bounds-p array i j)
+                       (aref array i j)
+                       background)))
+                x y 1 1)))))
     result))
