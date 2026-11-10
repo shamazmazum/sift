@@ -10,8 +10,8 @@
 (let* ((img1 (imago:read-image "img1.png"))
        (img2 (imago:read-image "img2.png"))
        ;; Perform contrast enhancement
-       (data1 (sift/util:enhance-contrast (sift/util:image-intensities img1)))
-       (data2 (sift/util:enhance-contrast (sift/util:image-intensities img2)))
+       (data1 (sift/util:enhance-contrast (sift/util:image->intensities img1)))
+       (data2 (sift/util:enhance-contrast (sift/util:image->intensities img2)))
        ;; Calculate keypoints and descriptors
        (kp1 (sift/core:descriptors (sift/core:gaussian-scale-space data1)))
        (kp2 (sift/core:descriptors (sift/core:gaussian-scale-space data2)))
@@ -74,7 +74,8 @@
       @cl:with-package[name="sift/util"](
          @cl:doc(function draw-keypoints)
          @cl:doc(function draw-matches)
-         @cl:doc(function image-intensities)
+         @cl:doc(function image->intensities)
+         @cl:doc(function intensities->image)
          @cl:doc(function enhance-contrast)
       )
    @end(section)
