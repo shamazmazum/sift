@@ -19,6 +19,7 @@
                (:file "keypoints")
                (:file "matching"))
   :depends-on (:cl-fftw/single
+               :cl-faiss
                :cffi
                :serapeum
                :alexandria

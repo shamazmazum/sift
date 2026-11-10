@@ -70,3 +70,7 @@
  (:class qlot/source/github:source-github
   :initargs (:repos "shamazmazum/cl-libtiff" :ref nil :branch nil :tag "v0.1")
   :version "github-14587dbb916dc4dad4e68bc66e4b5844b011d693"))
+("cl-faiss" .
+ (:class qlot/source/github:source-github
+  :initargs (:repos "shamazmazum/cl-faiss" :ref nil :branch nil :tag "v0.1.1")
+  :version "github-5074d01234461de7c96ac33b7617eee964a7f8a0"))

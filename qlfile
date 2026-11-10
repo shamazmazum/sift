@@ -15,3 +15,4 @@ github tokenrove/imago
 github shamazmazum/jpeg-turbo :tag v1.1
 github shamazmazum/cl-libheif :tag v1.1.0
 github shamazmazum/cl-libtiff :tag v0.1
+github shamazmazum/cl-faiss :tag v0.1.1

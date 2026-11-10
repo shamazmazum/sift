@@ -1,9 +1,10 @@
 (defpackage sift/core
   (:use #:cl)
-  (:local-nicknames (#:alex #:alexandria)
-                    (#:sera #:serapeum)
-                    (#:em   #:entzauberte-matrices)
-                    (#:ff   #:float-features))
+  (:local-nicknames (#:alex  #:alexandria)
+                    (#:sera  #:serapeum)
+                    (#:em    #:entzauberte-matrices)
+                    (#:faiss #:cl-faiss)
+                    (#:ff    #:float-features))
   (:export #:gaussian-scale-space
            #:keypoints
            #:image-coordinate #:image-coordinate-vector
