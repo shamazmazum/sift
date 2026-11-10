@@ -41,6 +41,7 @@ jobs:
       - name: Build documentation
         run: |
           cd $GITHUB_WORKSPACE
+          export LD_LIBRARY_PATH=/usr/local/lib
           qlot install
           qlot exec ros dynamic-space-size=8gb -s codex -e '(codex:document :sift)'
       - name: Deploy to GH pages
