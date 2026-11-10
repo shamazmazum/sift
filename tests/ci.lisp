@@ -1,5 +1,8 @@
 (defun do-all()
-  (ql:quickload :sift/tests)
+  (handler-case
+      (ql:quickload :sift/tests)
+    (error ()
+      (uiop:quit 1)))
   ;; Short version
   (setf
    (symbol-value
