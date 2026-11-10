@@ -10,18 +10,13 @@
 (defun clamp (v min max)
   (max (min v max) min))
 
-(sera:-> draw-keypoints ((simple-array single-float (* *)) list)
-         (values imago:rgb-image &optional))
-(defun draw-keypoints (array keypoints)
-  "Make an imago image of an array with keypoints drawn as circles
-with an orientation mark. Size of a circle corresponds to a keypoint's
-octave number."
-  (let ((image
-         (imago:make-rgb-image-from-pixels
-          (aops:vectorize* 'imago:rgb-pixel
-              (array)
-            (let ((v (clamp (floor (* 255 array)) 0 255)))
-              (imago:make-color v v v))))))
+(sera:-> draw-keypoints (imago:image list)
+         (values imago:image &optional))
+(defun draw-keypoints (image keypoints)
+  "Draw keypoints on imago image. They are drawn as circles with an
+orientation mark. Size of a circle corresponds to a keypoint's octave
+number."
+  (let ((image (imago:convert-to-rgb image)))
     (loop for color = (imago:make-color
                        (random 255)
                        (random 255)

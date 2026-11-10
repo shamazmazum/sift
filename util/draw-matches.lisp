@@ -1,14 +1,12 @@
 (in-package :sift/util)
 
-(sera:-> draw-matches ((simple-array single-float (* *))
-                       (simple-array single-float (* *))
-                       list)
+(sera:-> draw-matches (imago:image imago:image list)
          (values imago:rgb-image &optional))
-(defun draw-matches (array1 array2 matches)
-  "Make an imago image of two arrays shown side by side + matched
-keypoints + lines connecting keypoints in a match."
-  (let* ((image1 (draw-keypoints array1 (mapcar #'car matches)))
-         (image2 (draw-keypoints array2 (mapcar #'cdr matches)))
+(defun draw-matches (image1 image2 matches)
+  "Put two images side by side + draw matched keypoints and lines
+connecting keypoints in a match."
+  (let* ((image1 (draw-keypoints image1 (mapcar #'car matches)))
+         (image2 (draw-keypoints image2 (mapcar #'cdr matches)))
          (width (+ (imago:image-width image1)
                    (imago:image-width image2)))
          (height (max (imago:image-height image1)
