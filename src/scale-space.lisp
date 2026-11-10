@@ -27,12 +27,15 @@ one image below it + 2 images above."
   (let* ((nl (length σs))
          (h (array-dimension array 0))
          (w (array-dimension array 1))
+         (s (array-total-size array))
          (result (make-array (list nl h w) :element-type 'single-float)))
     (loop for i below nl
           for σ in σs
-          for blurred = (gaussian-blur array σ) do
-          (loop-array (blurred (j k))
-           (setf (aref result i j k) (aref blurred j k))))
+          for blurred = (gaussian-blur array σ)
+          do (loop with idx1 = (array-row-major-index result i 0 0)
+                   for j below s
+                   do (setf (row-major-aref result (+ idx1 j))
+                            (row-major-aref blurred j))))
     result))
 
 (sera:defconstructor scale-space
