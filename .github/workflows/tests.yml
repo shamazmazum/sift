@@ -8,10 +8,25 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
+      - name: Checkout Faiss
+        uses: actions/checkout@v7
+        with:
+          repository: facebookresearch/faiss
+          path: faiss
+          ref: v1.15.0
       - name: Install dependencies
         run: |
           sudo apt update
           sudo apt install libfftw3-dev libopenblas-openmp-dev liblapacke-dev build-essential
+      - name: Build Faiss
+        run: |
+          cd $GITHUB_WORKSPACE/faiss
+          mkdir build
+          cd build
+          cmake -DCMAKE_BUILD_TYPE=RELEASE -DBUILD_SHARED_LIBS=ON \
+          -DFAISS_ENABLE_C_API=ON -DBUILD_TESTING=OFF -DFAISS_ENABLE_GPU=OFF \
+          -DFAISS_ENABLE_PYTHON=OFF ..
+          make -j4 && sudo make install
       - name: Install roswell
         run: |
           curl -L https://raw.githubusercontent.com/roswell/roswell/master/scripts/install-for-ci.sh | sh
