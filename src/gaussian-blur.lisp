@@ -28,11 +28,11 @@
               (aref kernel-1d j))))
     kernel))
 
-(sera:-> gaussian-kernel-padded ((single-float (0f0))
+(sera:-> gaussian-kernel-padded (alex:positive-fixnum
                                  alex:positive-fixnum
-                                 alex:positive-fixnum)
+                                 (single-float (0f0)))
          (values (simple-array single-float (* *)) &optional))
-(defun gaussian-kernel-padded (σ h w)
+(defun gaussian-kernel-padded (h w σ)
   (let* ((kernel (make-array (list h w)
                              :element-type 'single-float
                              :initial-element 0f0))
@@ -47,32 +47,26 @@
               (aref kernel-tight i j))))
     kernel))
 
-(sera:-> normalize! ((simple-array single-float (* *)))
-         (values (simple-array single-float (* *)) &optional))
-(defun normalize! (array)
-  (declare (optimize (speed 3)))
-  (let ((size (array-total-size array)))
-    (loop for i below size do
-          (setf (row-major-aref array i)
-                (/ (row-major-aref array i) size))))
-  array)
-
 (sera:-> gaussian-blur ((simple-array single-float (* *))
                         (single-float (0f0)))
          (values (simple-array single-float (* *)) &optional))
 (defun gaussian-blur (array σ)
   (declare (optimize (speed 3)))
-  (let* ((dimensions (array-dimensions array))
-         (kernel (gaussian-kernel-padded
-                  σ (array-dimension array 0) (array-dimension array 1))))
-    (normalize!
-     (cl-fftw/single:%irfft
-      (cl-fftw/single:with-plan (plan cl-fftw/single:create-rfft-plan dimensions)
-        (let ((array-fft  (cl-fftw/single:rfft plan array))
-              (kernel-fft (cl-fftw/single:rfft plan kernel)))
-          (loop for i below (array-total-size array-fft) do
-                (setf (row-major-aref array-fft i)
-                      (* (row-major-aref array-fft  i)
-                         (row-major-aref kernel-fft i))))
-          array-fft))
-      dimensions))))
+  (let ((dimensions (array-dimensions array))
+        (size       (array-total-size array))
+        (kernel (gaussian-kernel-padded
+                 (array-dimension array 0)
+                 (array-dimension array 1)
+                 σ)))
+    (cl-fftw/single:%irfft
+     (cl-fftw/single:with-plan (plan cl-fftw/single:create-rfft-plan dimensions)
+       (let ((array-fft  (cl-fftw/single:rfft plan array))
+             (kernel-fft (cl-fftw/single:rfft plan kernel)))
+         (loop for i below (array-total-size array-fft) do
+           (setf (row-major-aref array-fft i)
+                 (/ (* (row-major-aref array-fft  i)
+                       (row-major-aref kernel-fft i))
+                    ;; Normalize
+                    size)))
+         array-fft))
+     dimensions)))
