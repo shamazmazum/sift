@@ -74,9 +74,12 @@ octave also contains one image below it and two images above it."
          (h  (array-dimension octave 1))
          (w  (array-dimension octave 2))
          (result (make-array (list (1- nl) h w) :element-type 'single-float)))
-    (loop for l below (1- nl) do
-          (loop-ranges ((i 0 h) (j 0 w))
-           (setf (aref result l i j)
-                 (- (aref octave (1+ l) i j)
-                    (aref octave l i j)))))
+    (loop for l below (1- nl)
+          for this-octave-idx = (array-row-major-index octave     l  0 0)
+          for next-octave-idx = (array-row-major-index octave (1+ l) 0 0)
+          for result-idx      = (array-row-major-index result     l  0 0)
+          do (loop for i below (* h w) do
+            (setf (row-major-aref result (+ result-idx i))
+                  (- (row-major-aref octave (+ next-octave-idx i))
+                     (row-major-aref octave (+ this-octave-idx i))))))
     result))
