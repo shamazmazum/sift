@@ -133,17 +133,13 @@
 (sera:-> keypoints (scale-space) (values list &optional))
 (defun keypoints (scale-space)
   "Detect keypoints in a scale space."
-  (reduce
-   (lambda (keypoint acc)
-     ;; One keypoint may spawn more keypoints with the same location
-     ;; and different orientations.
-     (append
-      (determine-orientations
-       keypoint
-       (nth (keypoint-octave keypoint)
-            (scale-space-octaves scale-space)))
-      acc))
-   (detect-keypoints
-    scale-space)
-   :from-end t
-   :initial-value nil))
+  (declare (optimize (speed 3)))
+  (reduce #'append (detect-keypoints scale-space)
+          :initial-value nil
+          :key (lambda (keypoint)
+                 ;; One keypoint may spawn more keypoints with the same location
+                 ;; and different orientations.
+                 (determine-orientations
+                  keypoint
+                  (nth (keypoint-octave keypoint)
+                       (scale-space-octaves scale-space))))))
