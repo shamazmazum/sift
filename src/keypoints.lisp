@@ -68,6 +68,7 @@
                           (simple-array single-float (* * *)))
          (values (or keypoint null) &optional))
 (defun adjust-keypoint (keypoint dog)
+  (declare (optimize (speed 3)))
   (when keypoint
     (let* ((index (keypoint-index keypoint))
            ;; Adjust the coordinate
