@@ -38,56 +38,31 @@
      (< (abs x) 5f-1))
    shift))
 
-(sera:-> far-from-borders-p
-         ((simple-array single-float (* * *))
-          index3 (single-float 0.0))
-         (values boolean &optional))
-(declaim (inline far-from-borders-p))
-(defun far-from-borders-p (array index σ)
-  ;; NB: Must be consistent with the size of a window in DESCRIBE-POINT
-  ;; (SQRT 2) is a scaling factor which can occur as a result of rotation.
-  (let ((margin (ceiling (* (sqrt 2) (+ 5f-1 (* 8 (ceiling σ)))))))
-    (flet ((check (i d)
-             (and (> i margin)
-                  (> (- d i) margin))))
-      (and (check (index3-j index) (array-dimension array 1))
-           (check (index3-k index) (array-dimension array 2))))))
-
-(sera:-> remove-close-to-borders
-         (keypoint (simple-array single-float (* * *)))
-         (values (or keypoint null) &optional))
-(defun remove-close-to-borders (keypoint array)
-  (declare (optimize (speed 3)))
-  (if (far-from-borders-p array (keypoint-index keypoint) (keypoint-σ keypoint))
-      keypoint))
-
-(sera:-> adjust-keypoint ((or keypoint null)
-                          (simple-array single-float (* * *)))
+(sera:-> adjust-keypoint (keypoint (simple-array single-float (* * *)))
          (values (or keypoint null) &optional))
 (defun adjust-keypoint (keypoint dog)
   (declare (optimize (speed 3)))
-  (when keypoint
-    (let* ((index (keypoint-index keypoint))
-           ;; Adjust the coordinate
-           (hessian  (hessian  dog index))
-           (gradient (gradient dog index))
-           (diff (solve hessian gradient)))
-      ;; Drop keypoints with enormous extremum correction
-      (if (and diff (shift-ok-p diff))
-          (let ((value (- (aref-index3 dog index)
-                          (/ (dot gradient diff) 2))))
-            ;; Discard a keypoint with low contrast
-            (if (> (abs value) 3f-2)
-                (let* ((subhessian (shrink3 hessian))
-                       (trace (mtrace subhessian))
-                       (det (det2 subhessian))
-                       (r 10f0))
-                  (declare (dynamic-extent subhessian))
-                  ;; Discard a keypoint with big ratio of principal
-                  ;; curvatures or negative determinant of Hessian.
-                  (if (and (> det 0)
-                           (< (/ (expt trace 2) det) (/ (expt (1+ r) 2) r)))
-                      (sub-coord keypoint diff)))))))))
+  (let* ((index (keypoint-index keypoint))
+         ;; Adjust the coordinate
+         (hessian  (hessian  dog index))
+         (gradient (gradient dog index))
+         (diff (solve hessian gradient)))
+    ;; Drop keypoints with enormous extremum correction
+    (if (and diff (shift-ok-p diff))
+        (let ((value (- (aref-index3 dog index)
+                        (/ (dot gradient diff) 2))))
+          ;; Discard a keypoint with low contrast
+          (if (> (abs value) 3f-2)
+              (let* ((subhessian (shrink3 hessian))
+                     (trace (mtrace subhessian))
+                     (det (det2 subhessian))
+                     (r 10f0))
+                (declare (dynamic-extent subhessian))
+                ;; Discard a keypoint with big ratio of principal
+                ;; curvatures or negative determinant of Hessian.
+                (if (and (> det 0)
+                         (< (/ (expt trace 2) det) (/ (expt (1+ r) 2) r)))
+                    (sub-coord keypoint diff))))))))
 
 (sera:-> detect-keypoints/octave ((simple-array single-float (* * *))
                                   (simple-array single-float (*))
@@ -100,22 +75,26 @@
          (h (array-dimension dog-space 1))
          (w (array-dimension dog-space 2))
          keypoints)
-    ;; Hessian can be not invertible
-    (ff:with-float-traps-masked (:overflow :invalid :divide-by-zero)
-      (loop-ranges ((l 1 (1- n)) (i 1 (1- h)) (j 1 (1- w)))
-       (when (keypointp dog-space l i j)
-         (let ((keypoint (adjust-keypoint
-                          (remove-close-to-borders
-                           (keypoint
-                            (make-coord-vector l i j)
-                            (index3 l i j)
-                            octave (aref σs l)
-                            ;; Determine orientation later
-                            0f0)
-                           dog-space)
-                          dog-space)))
-           (when keypoint
-             (push keypoint keypoints))))))
+    (loop for l from 1 below (1- n) do
+      ;; NB: Must be consistent with the size of a window in DESCRIBE-POINT
+      ;; (SQRT 2) is a scaling factor which can occur as a result of rotation.
+      (let* ((σ (ceiling (aref σs l)))
+             (margin (ceiling (* (sqrt 2) (+ 5f-1 (* 8 (ceiling σ)))))))
+        (declare (type (and (integer 1) (unsigned-byte 16)) σ))
+        ;; Hessian can be not invertible
+        (ff:with-float-traps-masked (:overflow :invalid :divide-by-zero)
+          (loop-ranges ((i margin (- h margin)) (j margin (- w margin)))
+            (when (keypointp dog-space l i j)
+              (let ((keypoint (adjust-keypoint
+                               (keypoint
+                                (make-coord-vector l i j)
+                                (index3 l i j)
+                                octave (aref σs l)
+                                ;; Determine orientation later
+                                0f0)
+                               dog-space)))
+                (when keypoint
+                  (push keypoint keypoints))))))))
     keypoints))
 
 (sera:-> detect-keypoints (scale-space)
