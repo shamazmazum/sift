@@ -16,9 +16,6 @@
   (let ((min ff:single-float-positive-infinity)
         (max ff:single-float-negative-infinity)
         (v (aref array l i j)))
-    ;; TODO: Why I should add this declaration? Why I should not when
-    ;; using double-float? Investigate this.
-    (declare (type single-float min max))
     (loop-ranges ((%l -1 2) (%i -1 2) (%j -1 2))
      (when (or (not (zerop %l)) (not (zerop %i)) (not (zerop %j)))
        (let ((v (aref array (+ l %l) (+ i %i) (+ j %j))))
