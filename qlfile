@@ -1,4 +1,4 @@
-github shamazmazum/cl-fftw :tag v0.2
+github shamazmazum/cl-fftw :tag v0.3
 github shamazmazum/picolens :tag v0.2
 ql serapeum
 ql alexandria

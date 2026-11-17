@@ -58,10 +58,10 @@
                  (array-dimension array 0)
                  (array-dimension array 1)
                  σ)))
-    (cl-fftw/single:%irfft
-     (cl-fftw/single:with-plan (plan cl-fftw/single:create-rfft-plan dimensions)
-       (let ((array-fft  (cl-fftw/single:rfft plan array))
-             (kernel-fft (cl-fftw/single:rfft plan kernel)))
+    (fftw:%irfft
+     (fftw:with-rfft-plan (plan dimensions)
+       (let ((array-fft  (fftw:rfft plan array))
+             (kernel-fft (fftw:rfft plan kernel)))
          (loop for i below (array-total-size array-fft) do
            (setf (row-major-aref array-fft i)
                  (/ (* (row-major-aref array-fft  i)

@@ -4,7 +4,8 @@
                     (#:sera  #:serapeum)
                     (#:em    #:entzauberte-matrices)
                     (#:faiss #:cl-faiss)
-                    (#:ff    #:float-features))
+                    (#:ff    #:float-features)
+                    (#:fftw  #:cl-fftw/single))
   (:export #:gaussian-scale-space
            #:keypoints
            #:image-coordinate #:image-coordinate-vector

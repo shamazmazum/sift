@@ -20,7 +20,7 @@
          (values (simple-array single-float (* *)) &optional))
 (defun filter-lowpass (array)
   (declare (optimize (speed 3)))
-  (let ((ft (cl-fftw/single:%rfft array))
+  (let ((ft (fftw:%rfft array))
         (total (float (array-total-size array) 0f0)))
     (multiple-value-bind (sh eh sw ew)
         (cut-ranges (array-dimension array 0)
@@ -29,7 +29,7 @@
        (setf (aref ft i j) #c(0f0 0f0)))
       (loop-array (ft (i j))
        (setf (aref ft i j) (/ (aref ft i j) total))))
-    (cl-fftw/single:%irfft ft (array-dimensions array))))
+    (fftw:%irfft ft (array-dimensions array))))
 
 (sera:-> downsample ((simple-array single-float (* *)))
          (values (simple-array single-float (* *)) &optional))
